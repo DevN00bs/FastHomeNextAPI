@@ -1,15 +1,16 @@
 from apiflask import APIBlueprint, input, output, abort
 from apiflask.schemas import Schema
-from ..models.auth import RegistrationRequest
-from ..controllers.auth import register_user
 
-router = APIBlueprint(name="auth", import_name=__name__)
+from ..controllers.auth import register_user
+from ..models.auth import RegistrationRequest
+
+router = APIBlueprint("auth", __name__, "Authentication")
 
 
 @router.post("/register")
 @input(RegistrationRequest)
 @output(Schema, 201)
-def create_user(data: RegistrationRequest):
+def create_user(data):
     result = register_user(data)
     if not result:
         abort(500)
