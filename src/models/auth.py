@@ -15,6 +15,7 @@ class User(Document):
     fb_link = StringField()
     insta_link = StringField()
     twit_link = StringField()
+    meta = {"collection": "users"}
 
 
 class RegistrationRequest(Schema):
