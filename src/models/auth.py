@@ -5,8 +5,8 @@ from mongoengine import Document, StringField, EmailField, BooleanField
 
 
 class User(Document):
-    username = StringField()
-    email = EmailField()
+    username = StringField(unique=True)
+    email = EmailField(unique=True)
     passwd_hash = StringField()
     is_verified = BooleanField(default=False)
     last_token = StringField()
