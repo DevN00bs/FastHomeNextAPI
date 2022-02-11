@@ -1,10 +1,11 @@
-from mongoengine.errors import OperationError
+from mongoengine.errors import OperationError, NotUniqueError
 from werkzeug.security import generate_password_hash
 
 from ..models.auth import User
+from ..utils.enums import ControllerStatus
 
 
-def register_user(data) -> bool:
+def register_user(data) -> ControllerStatus:
     hashed_passwd = generate_password_hash(data["password"])
     try:
         User(
@@ -12,6 +13,8 @@ def register_user(data) -> bool:
             passwd_hash=hashed_passwd,
             email=data["email"]
         ).save()
-        return True
+        return ControllerStatus.SUCCESS
+    except NotUniqueError:
+        return ControllerStatus.ALREADY_EXISTS
     except OperationError:
-        return False
+        return ControllerStatus.ERROR
