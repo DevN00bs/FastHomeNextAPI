@@ -26,6 +26,10 @@ def create_user(data):
 @router.post("/login")
 @input(LoginRequest)
 @output(LoginResponse)
+@doc(responses={
+    401: "Username and/or password combination is incorrect",
+    403: "Your account hasn't been verified yet"
+})
 def log_in_user(data):
     result = log_in(data)
     if result == ControllerStatus.ERROR:
