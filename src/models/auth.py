@@ -8,7 +8,7 @@ class User(Document):
     username = StringField(unique=True)
     email = EmailField(unique=True)
     passwd_hash = StringField()
-    is_verified = BooleanField(default=False)
+    is_verified = BooleanField(default=True)
     last_token = StringField()
     phone = StringField()
     contact_email = StringField()
