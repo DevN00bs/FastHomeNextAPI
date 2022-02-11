@@ -32,13 +32,13 @@ def create_user(data):
 })
 def log_in_user(data):
     result = log_in(data)
-    if result == ControllerStatus.ERROR:
+    if result[0] == ControllerStatus.ERROR:
         abort(500)
 
-    if result == ControllerStatus.WRONG_CREDS:
+    if result[0] == ControllerStatus.WRONG_CREDS:
         abort(401)
 
-    if result == ControllerStatus.NOT_VERIFIED:
+    if result[0] == ControllerStatus.NOT_VERIFIED:
         abort(403)
 
-    return {"token": "temptoken"}
+    return {"token": result[1]}
