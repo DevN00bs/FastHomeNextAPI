@@ -1,5 +1,6 @@
-from typing import Tuple
+from os import environ
 
+from jwt import encode
 from mongoengine.errors import OperationError, NotUniqueError
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -37,4 +38,4 @@ def log_in(data) -> tuple[ControllerStatus, str]:
     if not check_password_hash(user_data["passwd_hash"], data["password"]):
         return ControllerStatus.WRONG_CREDS, ""
 
-    return ControllerStatus.SUCCESS, "temptoken"
+    return ControllerStatus.SUCCESS, encode({"id": str(user_data.id)}, environ["JWT_SECRET"])
