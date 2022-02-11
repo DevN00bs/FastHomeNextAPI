@@ -4,7 +4,7 @@ from apiflask.schemas import Schema
 from ..controllers.auth import register_user
 from ..models.auth import RegistrationRequest
 
-router = APIBlueprint("auth", __name__, "Authentication")
+router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth")
 
 
 @router.post("/register")
