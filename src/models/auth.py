@@ -7,14 +7,14 @@ from mongoengine import Document, StringField, EmailField, BooleanField
 class User(Document):
     username = StringField()
     email = EmailField()
-    passwdHash = StringField()
-    isVerified = BooleanField()
-    lastToken = StringField()
+    passwd_hash = StringField()
+    is_verified = BooleanField(default=False)
+    last_token = StringField()
     phone = StringField()
-    contactEmail = StringField()
-    fbLink = StringField()
-    instaLink = StringField()
-    twitLink = StringField()
+    contact_email = StringField()
+    fb_link = StringField()
+    insta_link = StringField()
+    twit_link = StringField()
 
 
 class RegistrationRequest(Schema):

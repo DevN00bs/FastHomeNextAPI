@@ -9,7 +9,7 @@ def register_user(data) -> bool:
     try:
         User(
             username=data["username"],
-            passwdHash=hashed_passwd,
+            passwd_hash=hashed_passwd,
             email=data["email"]
         ).save()
         return True
