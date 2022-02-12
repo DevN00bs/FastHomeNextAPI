@@ -2,6 +2,7 @@ from apiflask import APIBlueprint, input, output, abort, doc
 from apiflask.schemas import Schema
 
 from ..controllers.auth import register_user, log_in
+from ..controllers.mail import send_email
 from ..models.auth import RegistrationRequest, LoginRequest, LoginResponse
 from ..utils.enums import ControllerStatus
 
@@ -18,7 +19,12 @@ def create_user(data):
         abort(409)
 
     if result == ControllerStatus.ERROR:
-        abort(500)
+        abort(500, "registration")
+
+    mail_result = send_email("Verify your account", data["email"], "verify.html",
+                             {"username": data["username"], "link": "https://www.google.com"})
+    if mail_result == ControllerStatus.ERROR:
+        abort(500, "email")
 
     return ""
 
