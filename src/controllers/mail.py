@@ -3,7 +3,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from os import environ
 from os.path import join, dirname
-from smtplib import SMTP
+from smtplib import SMTP, SMTPException
+
+from ..utils.enums import ControllerStatus
 
 
 def compose_body(file_name: str, info: dict[str, str]) -> MIMEText:
@@ -32,9 +34,19 @@ def compose_mail(subject: str, mail_to: str, template_file: str, template_info: 
     return mail
 
 
-def send_email(subject: str, mail_to: str, template_file: str, template_info: dict[str, str]):
-    mail = compose_mail(subject, mail_to, template_file, template_info)
-    sender = SMTP(environ["MAIL_SERVER"], int(environ["MAIL_PORT"]))
-    sender.login(environ["MAIL_ADDR"], environ["MAIL_PASS"])
-    sender.sendmail(environ["MAIL_ADDR"], mail_to, mail.as_string())
-    sender.quit()
+def send_email(subject: str, mail_to: str, template_file: str, template_info: dict[str, str]) -> ControllerStatus:
+    try:
+        sender = SMTP(environ["MAIL_SERVER"], int(environ["MAIL_PORT"]))
+    except SMTPException:
+        return ControllerStatus.ERROR
+
+    try:
+        sender.login(environ["MAIL_ADDR"], environ["MAIL_PASS"])
+        sender.sendmail(environ["MAIL_ADDR"], mail_to,
+                        compose_mail(subject, mail_to, template_file, template_info).as_string())
+    except SMTPException:
+        return ControllerStatus.ERROR
+    finally:
+        sender.quit()
+
+    return ControllerStatus.SUCCESS
