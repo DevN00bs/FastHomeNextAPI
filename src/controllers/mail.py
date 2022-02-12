@@ -2,20 +2,21 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from os import environ
+from os.path import join, dirname
 from smtplib import SMTP
 
 
 def compose_body(file_name: str, info: dict[str, str]) -> MIMEText:
-    template = open(f"../templates/${file_name}")
-    mail_body = MIMEText(template.read().format(info), "html")
+    template = open(join(dirname(__file__), f"../templates/{file_name}"))
+    mail_body = MIMEText(template.read().format(**info), "html")
     template.close()
     return mail_body
 
 
 def load_logo() -> MIMEImage:
-    logo = open("../templates/img/logo.png", "rb")
+    logo = open(join(dirname(__file__), "../templates/img/logo.png"), "rb")
     mail_logo = MIMEImage(logo.read())
-    mail_logo.add_header("Content-ID", "logo@fasthome")
+    mail_logo.add_header("Content-ID", "<logo@fasthome>")
     logo.close()
     return mail_logo
 
