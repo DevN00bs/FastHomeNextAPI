@@ -38,4 +38,4 @@ def log_in(data) -> tuple[ControllerStatus, str]:
     if not check_password_hash(user_data["passwd_hash"], data["password"]):
         return ControllerStatus.WRONG_CREDS, ""
 
-    return ControllerStatus.SUCCESS, encode({"id": str(user_data.id)}, environ["JWT_SECRET"])
+    return ControllerStatus.SUCCESS, encode({"id": str(user_data.id), "aud": "login"}, environ["JWT_SECRET"])
