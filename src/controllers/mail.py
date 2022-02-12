@@ -24,7 +24,7 @@ def load_logo() -> MIMEImage:
 def compose_mail(subject: str, mail_to: str, template_file: str, template_info: dict[str, str]) -> MIMEMultipart:
     mail = MIMEMultipart()
     mail["Subject"] = subject
-    mail["From"] = environ["MAIL_ADDR"]
+    mail["From"] = f"FastHome <{environ['MAIL_ADDR']}>"
     mail["To"] = mail_to
 
     mail.attach(compose_body(template_file, template_info))
