@@ -10,7 +10,7 @@ from src.models.auth import User
 from src.utils.enums import ControllerStatus
 
 
-class LoginTests(TestCase):
+class AuthTests(TestCase):
     _username = "testuser"
     _password = "testpass"
     _email = "test@example.net"
