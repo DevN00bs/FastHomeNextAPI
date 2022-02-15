@@ -11,6 +11,7 @@ pyjwt = "~=2.3.0"
 
 [dev-packages]
 python-dotenv = "~=0.19.2"
+mongomock = "~=4.0.0"
 
 [scripts]
 start = "flask run --reload"
