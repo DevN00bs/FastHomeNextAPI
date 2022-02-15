@@ -14,3 +14,4 @@ python-dotenv = "~=0.19.2"
 
 [scripts]
 start = "flask run --reload"
+test = "python -m unittest discover -s ./test -p '*.py'"
