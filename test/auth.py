@@ -36,3 +36,19 @@ class AuthTests(TestCase):
 
         assert tuple_result[0] == ControllerStatus.SUCCESS and str(User.objects(username=self._username).first().id) == \
                decode(tuple_result[1], environ["JWT_SECRET"], ["HS256"], audience="login")["id"]
+
+    def test_wrong_username(self):
+        tuple_result = log_in({
+            "username": "wronguser",
+            "password": self._password
+        })
+
+        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
+
+    def test_wrong_password(self):
+        tuple_result = log_in({
+            "username": self._username,
+            "password": "wrongpass"
+        })
+
+        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
