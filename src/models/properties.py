@@ -1,6 +1,7 @@
 from mongoengine import Document, StringField, DecimalField, IntField, ListField
 
-#general properties info fields
+
+# general properties info fields
 class PropertyData(Document):
     address = StringField()
     description = StringField()
