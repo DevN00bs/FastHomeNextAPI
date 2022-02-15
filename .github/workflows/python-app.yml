@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         uses: palewire/install-python-pipenv-pipfile@v2
         with:
-          python-version: 3.10
+          python-version: "3.10"
       - name: Test with unittest
         env:
           JWT_SECRET: test-secret
