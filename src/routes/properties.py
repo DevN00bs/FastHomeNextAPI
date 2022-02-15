@@ -7,11 +7,13 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api/properties")
 
+
 @router.get('/')
 def test():
     return {'message': 'OK'}
 
-#register
+
+# register
 @router.post("/register-property")
 @input(PropertyData)
 @output(Schema, 201)
@@ -20,10 +22,11 @@ def create_property(data):
     result = register_prop(data)
     if result == ControllerStatus.ERROR:
         abort(500)
-    
+
     return ""
 
-#read
+
+# read
 @router.get("/properties")
 @output(Schema, 200)
 @doc(summary='Get properties info')
@@ -34,9 +37,9 @@ def read_property(data):
     return ""
 
 
-#update
-@router.put("/property-{id}")#not sure about id xD
-@input(PropertyData)#not sure if using just id's from property
+# update
+@router.put("/property-{id}")  # not sure about id xD
+@input(PropertyData)  # not sure if using just id's from property
 @output(Schema, 200)
 @doc(summary="Update properties based on their ID")
 def update_property(data):
@@ -46,10 +49,9 @@ def update_property(data):
     return ""
 
 
-
-#delete
-@router.delete("/property-{id}")#not sure about id xD
-@input(PropertyData)#not sure if using just id's from property x2
+# delete
+@router.delete("/property-{id}")  # not sure about id xD
+@input(PropertyData)  # not sure if using just id's from property x2
 @output(Schema, 202)
 @doc(summary="Delete properties based on their ID")
 def delete_property(data):
