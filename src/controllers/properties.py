@@ -14,7 +14,7 @@ def register_prop(data) -> ControllerStatus:
 
 def all_props(data) -> tuple[ControllerStatus, list[PropertyRead]]:
     try:
-        data = PropertyRead.objects #objects means all data in the db + (filters)
+        data = PropertyCreate.objects #objects means all data in the db + (filters)
         return ControllerStatus.SUCCESS, data
     except OperationError:
         return ControllerStatus.ERROR, list() #when create, parenthesis; read, brackets
