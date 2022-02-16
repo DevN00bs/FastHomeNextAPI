@@ -2,7 +2,8 @@ from mongoengine import Document, StringField, DecimalField, IntField, ListField
 from apiflask.fields import String, Float, Integer
 from apiflask import Schema
 
-class PropertyCreate(Document):
+#PropertyDoc - old PropertyCreate
+class PropertyDoc(Document):
     address = StringField(unique=True)
     description = StringField()
     price = DecimalField()
@@ -31,7 +32,7 @@ class PropertyRead(Schema):
     currency = String(required=True)
 
 #required has to have data; depends on how front makes it able to be editable, might delete some required
-class PropertyUpdate(Document):
+class PropertyUpdate(Schema):
     id = String()
     address = String(required=True)
     description = String(required=True)
@@ -45,5 +46,5 @@ class PropertyUpdate(Document):
     contract = String(required=True)
     currency = String(required=True)    
 
-class PropertyDelete(Document):
+class PropertyDelete(Schema):
     id = String()

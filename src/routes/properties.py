@@ -13,7 +13,7 @@ def test():
     return {'message': 'OK'}
 
 @router.post("/property")
-@input(PropertyCreate)
+@input(PropertyDoc)
 @output(Schema, 201)
 @doc(summary='Register properties data', responses={409: 'A property with that address is already registered'})
 def create_property(data):
