@@ -7,6 +7,7 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
+
 @router.get('/')
 def test():
     return {'message': 'OK'}
@@ -22,7 +23,7 @@ def create_property(data):
 
     if result == ControllerStatus.ERROR:
         abort(500)
-    
+
     return ""
 
 @router.get("/properties")
