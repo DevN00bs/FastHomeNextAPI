@@ -1,47 +1,34 @@
 from mongoengine.errors import OperationError
 
-from ..models.properties import PropertyData
+from ..models.properties import *
 from ..utils.enums import ControllerStatus
 
-#create
 def register_prop(data) -> ControllerStatus:
     try:
-        PropertyData(
+        PropertyCreate(
             **data
         ).save()
         return ControllerStatus.SUCCESS
     except OperationError:
         return ControllerStatus.ERROR
 
-#read
-def all_props(data) -> ControllerStatus:
+def all_props(data) -> tuple[ControllerStatus, list[PropertyRead]]:
     try:
-        prop_data = PropertyData.objects(address=data["address"])#just saved cuz maybe used later
-        PropertyData(
-            **data
-        )._get_collection(meta={"collection":"properties"})
-        return ControllerStatus.SUCCESS
+        data = PropertyRead.objects #objects means all data in the db + (filters)
+        return ControllerStatus.SUCCESS, data
     except OperationError:
-        return ControllerStatus.ERROR
+        return ControllerStatus.ERROR, list() #when create, parenthesis; read, brackets
 
-#TODO: field search
-
-#update
 def update_prop(data) -> ControllerStatus:
     try:
-        PropertyData(
-            **data
-        ).update()
+        PropertyUpdate.objects(id=data["id"]).first().update(**data) #depends on the schema
         return ControllerStatus.SUCCESS
     except OperationError:
         return ControllerStatus.ERROR
 
-#delete
 def delete_prop(data) -> ControllerStatus:
     try:
-        PropertyData(
-            **data
-        ).delete()
+        PropertyDelete.objects(id=data["id"]).first().delete() #first to avoid making useless lists
         return ControllerStatus.SUCCESS
     except OperationError:
         return ControllerStatus.ERROR

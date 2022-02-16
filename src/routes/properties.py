@@ -1,42 +1,41 @@
 from apiflask import APIBlueprint, input, output, abort, doc
 from apiflask.schemas import Schema
 
-from ..controllers.properties import all_props, delete_prop, register_prop, update_prop
-from ..models.properties import PropertyData
+from ..controllers.properties import *
+from ..models.properties import *
 from ..utils.enums import ControllerStatus
 
-router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api/properties")
+router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
 @router.get('/')
 def test():
     return {'message': 'OK'}
 
-#register
-@router.post("/register-property")
-@input(PropertyData)
+@router.post("/property")
+@input(PropertyCreate)
 @output(Schema, 201)
-@doc(summary='Creates properties')
+@doc(summary='Register properties data', responses={409: 'A property with that address is already registered'})
 def create_property(data):
     result = register_prop(data)
+    if result == ControllerStatus.ALREADY_EXISTS:
+        abort(409)
+
     if result == ControllerStatus.ERROR:
         abort(500)
     
     return ""
 
-#read
 @router.get("/properties")
 @output(Schema, 200)
 @doc(summary='Get properties info')
 def read_property(data):
     result = all_props(data)
-    if result == ControllerStatus.ERROR:
+    if result[0] == ControllerStatus.ERROR:
         abort(500)
-    return ""
+    return result[1]
 
-
-#update
-@router.put("/property-{id}")#not sure about id xD
-@input(PropertyData)#not sure if using just id's from property
+@router.put("/property")
+@input(PropertyUpdate)
 @output(Schema, 200)
 @doc(summary="Update properties based on their ID")
 def update_property(data):
@@ -45,11 +44,8 @@ def update_property(data):
         abort(500)
     return ""
 
-
-
-#delete
-@router.delete("/property-{id}")#not sure about id xD
-@input(PropertyData)#not sure if using just id's from property x2
+@router.delete("/property")
+@input(PropertyDelete)
 @output(Schema, 202)
 @doc(summary="Delete properties based on their ID")
 def delete_property(data):
