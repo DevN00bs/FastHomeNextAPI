@@ -1,9 +1,12 @@
+from datetime import datetime, timedelta, timezone
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from os import environ
 from os.path import join, dirname
 from smtplib import SMTP, SMTPException
+
+from jwt import encode
 
 from ..utils.enums import ControllerStatus
 
@@ -50,3 +53,9 @@ def send_email(subject: str, mail_to: str, template_file: str, template_info: di
         sender.quit()
 
     return ControllerStatus.SUCCESS
+
+
+def create_verification_link(user_id: str) -> str:
+    verify_token = encode({"id": user_id, "aud": "verify", "exp": (datetime.now(timezone.utc) + timedelta(minutes=11))},
+                          environ["JWT_SECRET"])
+    return f"{environ['FRONT_URL']}/verify/{verify_token}"

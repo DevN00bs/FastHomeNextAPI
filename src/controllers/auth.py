@@ -8,19 +8,19 @@ from ..models.auth import User
 from ..utils.enums import ControllerStatus
 
 
-def register_user(data) -> ControllerStatus:
+def register_user(data) -> tuple[ControllerStatus, str]:
     hashed_passwd = generate_password_hash(data["password"])
     try:
-        User(
+        new_user = User(
             username=data["username"],
             passwd_hash=hashed_passwd,
             email=data["email"]
         ).save()
-        return ControllerStatus.SUCCESS
+        return ControllerStatus.SUCCESS, str(new_user.id)
     except NotUniqueError:
-        return ControllerStatus.ALREADY_EXISTS
+        return ControllerStatus.ALREADY_EXISTS, ""
     except OperationError:
-        return ControllerStatus.ERROR
+        return ControllerStatus.ERROR, ""
 
 
 def log_in(data) -> tuple[ControllerStatus, str]:
