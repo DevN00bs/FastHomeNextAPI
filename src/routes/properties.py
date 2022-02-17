@@ -8,11 +8,6 @@ from ..utils.enums import ControllerStatus
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
 
-@router.get('/')
-def test():
-    return {'message': 'OK'}
-
-
 @router.post("/property")
 @input(NewProperty)
 @output(Schema, 201)
