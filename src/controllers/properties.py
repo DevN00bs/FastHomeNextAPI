@@ -14,7 +14,7 @@ def register_prop(data) -> ControllerStatus:
         return ControllerStatus.ERROR
 
 
-def all_props(data) -> tuple[ControllerStatus, list[NewProperty]]:
+def all_props() -> tuple[ControllerStatus, list[NewProperty]]:
     try:
         data = PropertyDoc.objects
         # Objects means all data in the db + (filters)
