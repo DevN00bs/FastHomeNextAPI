@@ -31,7 +31,7 @@ def create_property(data):
 
 
 @router.get("/properties")
-@output(Schema, 200)
+@output(PropertyRead, 200)
 @doc(summary='Get properties info')
 def read_property():
     result = all_props()
@@ -53,7 +53,7 @@ def update_property(data):
 
 @router.delete("/property")
 @input(PropertyDelete)
-@output(Schema, 202)
+@output(Schema, 200)
 @doc(summary="Delete properties based on their ID")
 def delete_property(data):
     result = delete_prop(data)

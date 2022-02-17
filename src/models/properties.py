@@ -21,6 +21,20 @@ class PropertyDoc(Document):
     meta = {"collection": "properties"}
 
 
+class PropertyRead(Schema):
+    address = String()
+    description = String()
+    price = Float()
+    terrain_height = Float()
+    terrain_width = Float()
+    bed = Integer()
+    bath = Float()
+    floors = Integer()
+    garage = Integer()
+    contract = String()
+    currency = String()
+
+
 class NewProperty(Schema):
     address = String(required=True)
     description = String(required=True)
