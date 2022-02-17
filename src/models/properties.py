@@ -1,8 +1,10 @@
-from mongoengine import Document, StringField, DecimalField, IntField, ListField
+from mongoengine import *
 from apiflask.fields import String, Float, Integer
 from apiflask import Schema
 
-#PropertyDoc - old PropertyCreate
+# PropertyDoc - old PropertyCreate
+
+
 class PropertyDoc(Document):
     address = StringField(unique=True)
     description = StringField()
@@ -18,6 +20,7 @@ class PropertyDoc(Document):
     currency = StringField()
     meta = {"collection": "properties"}
 
+
 class NewProperty(Schema):
     address = String(required=True)
     description = String(required=True)
@@ -31,6 +34,7 @@ class NewProperty(Schema):
     contract = String(required=True)
     currency = String(required=True)
 
+
 class PropertyUpdate(Schema):
     id = String(required=True)
     address = String()
@@ -43,7 +47,8 @@ class PropertyUpdate(Schema):
     floors = Integer()
     garage = Integer()
     contract = String()
-    currency = String()    
+    currency = String()
+
 
 class PropertyDelete(Schema):
     id = String(required=True)

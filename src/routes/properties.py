@@ -7,14 +7,18 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
+
 @router.get('/')
 def test():
     return {'message': 'OK'}
 
+
 @router.post("/property")
 @input(NewProperty)
 @output(Schema, 201)
-@doc(summary='Register properties data', responses={409: 'A property with that address is already registered'})
+@doc(
+    summary='Register properties data',
+    responses={409: 'A property with that address is already registered'})
 def create_property(data):
     result = register_prop(data)
     if result == ControllerStatus.ALREADY_EXISTS:
@@ -25,6 +29,7 @@ def create_property(data):
 
     return ""
 
+
 @router.get("/properties")
 @output(Schema, 200)
 @doc(summary='Get properties info')
@@ -33,6 +38,7 @@ def read_property(data):
     if result[0] == ControllerStatus.ERROR:
         abort(500)
     return result[1]
+
 
 @router.put("/property")
 @input(PropertyUpdate)
@@ -43,6 +49,7 @@ def update_property(data):
     if result == ControllerStatus.ERROR:
         abort(500)
     return ""
+
 
 @router.delete("/property")
 @input(PropertyDelete)
