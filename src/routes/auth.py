@@ -22,7 +22,7 @@ def create_user(data):
         abort(500, "registration")
 
     mail_result = mail.send_email("Verify your account", data["email"], "verify.html",
-                                  {"username": data["username"], "link": mail.create_verification_link(result[1])})
+                                  {"username": data["username"], "link": mail.create_mail_link(result[1], "verify")})
     if mail_result == ControllerStatus.ERROR:
         abort(500, "email")
 
@@ -55,7 +55,7 @@ def log_in_user(data):
     404: "No token was provided"
 })
 def verify_account(token):
-    result = auth.verify_token(token)
+    result = auth.verify_verification_token(token)
     if result == ControllerStatus.INVALID_LINK:
         abort(410)
 

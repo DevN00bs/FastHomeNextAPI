@@ -1,4 +1,5 @@
 from os import environ
+from typing import Any
 
 from jwt import encode, decode, InvalidTokenError
 from mongoengine.errors import OperationError, NotUniqueError, DoesNotExist
@@ -6,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from ..models.auth import User
 from ..utils.enums import ControllerStatus
+from ..utils.types import token_audiences
 
 
 def register_user(data) -> tuple[ControllerStatus, str]:
@@ -41,9 +43,13 @@ def log_in(data) -> tuple[ControllerStatus, str]:
     return ControllerStatus.SUCCESS, encode({"id": str(user_data.id), "aud": "login"}, environ["JWT_SECRET"])
 
 
-def verify_token(token: str) -> ControllerStatus:
+def decode_mail_token(token: str, purpose: token_audiences) -> dict[str, Any]:
+    return decode(token, environ["JWT_SECRET"], ["HS256"], audience=purpose)
+
+
+def verify_verification_token(token: str) -> ControllerStatus:
     try:
-        token_data = decode(token, environ["JWT_SECRET"], ["HS256"], audience="verify")
+        token_data = decode_mail_token(token, "verify")
     except InvalidTokenError:
         return ControllerStatus.INVALID_LINK
 

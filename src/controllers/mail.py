@@ -9,6 +9,7 @@ from smtplib import SMTP, SMTPException
 from jwt import encode
 
 from ..utils.enums import ControllerStatus
+from ..utils.types import token_audiences
 
 
 def compose_body(file_name: str, info: dict[str, str]) -> MIMEText:
@@ -55,7 +56,7 @@ def send_email(subject: str, mail_to: str, template_file: str, template_info: di
     return ControllerStatus.SUCCESS
 
 
-def create_verification_link(user_id: str) -> str:
-    verify_token = encode({"id": user_id, "aud": "verify", "exp": (datetime.now(timezone.utc) + timedelta(minutes=11))},
+def create_mail_link(user_id: str, purpose: token_audiences) -> str:
+    verify_token = encode({"id": user_id, "aud": purpose, "exp": (datetime.now(timezone.utc) + timedelta(minutes=11))},
                           environ["JWT_SECRET"])
-    return f"{environ['FRONT_URL']}/verify/{verify_token}"
+    return f"{environ['FRONT_URL']}/{purpose}/{verify_token}"
