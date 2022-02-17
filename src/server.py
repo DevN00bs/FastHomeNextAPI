@@ -3,6 +3,7 @@ from os import environ
 from apiflask import APIFlask
 from mongoengine import connect
 from .routes.auth import router as auth
+from .routes.properties import router as prop
 
 app = APIFlask(__name__,
                title="FastHome API",
@@ -15,3 +16,4 @@ connect(
 )
 
 app.register_blueprint(auth)
+app.register_blueprint(prop)
