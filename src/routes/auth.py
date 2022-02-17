@@ -44,4 +44,4 @@ def log_in_user(data):
     if result[0] == ControllerStatus.NOT_VERIFIED:
         abort(403)
 
-    return {"token": result[1]}
+    return {"token": f"Bearer {result[1]}"}
