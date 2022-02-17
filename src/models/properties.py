@@ -18,7 +18,7 @@ class PropertyDoc(Document):
     currency = StringField()
     meta = {"collection": "properties"}
 
-class PropertyRead(Schema):
+class NewProperty(Schema):
     address = String(required=True)
     description = String(required=True)
     price = Float(required=True)
@@ -31,20 +31,19 @@ class PropertyRead(Schema):
     contract = String(required=True)
     currency = String(required=True)
 
-#required has to have data; depends on how front makes it able to be editable, might delete some required
 class PropertyUpdate(Schema):
-    id = String()
-    address = String(required=True)
-    description = String(required=True)
-    price = Float(required=True)
-    terrain_height = Float(required=True)
-    terrain_width = Float(required=True)
-    bed = Integer(required=True)
-    bath = Float(required=True)
-    floors = Integer(required=True)
-    garage = Integer(required=True)
-    contract = String(required=True)
-    currency = String(required=True)    
+    id = String(required=True)
+    address = String()
+    description = String()
+    price = Float()
+    terrain_height = Float()
+    terrain_width = Float()
+    bed = Integer()
+    bath = Float()
+    floors = Integer()
+    garage = Integer()
+    contract = String()
+    currency = String()    
 
 class PropertyDelete(Schema):
-    id = String()
+    id = String(required=True)

@@ -12,7 +12,7 @@ def register_prop(data) -> ControllerStatus:
     except OperationError:
         return ControllerStatus.ERROR
 
-def all_props(data) -> tuple[ControllerStatus, list[PropertyRead]]:
+def all_props(data) -> tuple[ControllerStatus, list[NewProperty]]:
     try:
         data = PropertyDoc.objects #objects means all data in the db + (filters)
         return ControllerStatus.SUCCESS, data

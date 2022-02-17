@@ -7,13 +7,12 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
-
 @router.get('/')
 def test():
     return {'message': 'OK'}
 
 @router.post("/property")
-@input(PropertyDoc)
+@input(NewProperty)
 @output(Schema, 201)
 @doc(summary='Register properties data', responses={409: 'A property with that address is already registered'})
 def create_property(data):
