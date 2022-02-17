@@ -33,8 +33,8 @@ def create_property(data):
 @router.get("/properties")
 @output(Schema, 200)
 @doc(summary='Get properties info')
-def read_property(data):
-    result = all_props(data)
+def read_property():
+    result = all_props()
     if result[0] == ControllerStatus.ERROR:
         abort(500)
     return result[1]
