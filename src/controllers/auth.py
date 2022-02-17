@@ -1,7 +1,7 @@
 from os import environ
 
-from jwt import encode
-from mongoengine.errors import OperationError, NotUniqueError
+from jwt import encode, decode, InvalidTokenError
+from mongoengine.errors import OperationError, NotUniqueError, DoesNotExist
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from ..models.auth import User
@@ -39,3 +39,19 @@ def log_in(data) -> tuple[ControllerStatus, str]:
         return ControllerStatus.WRONG_CREDS, ""
 
     return ControllerStatus.SUCCESS, encode({"id": str(user_data.id), "aud": "login"}, environ["JWT_SECRET"])
+
+
+def verify_token(token: str) -> ControllerStatus:
+    try:
+        token_data = decode(token, environ["JWT_SECRET"], ["HS256"], audience="verify")
+    except InvalidTokenError:
+        return ControllerStatus.INVALID_LINK
+
+    try:
+        User.objects.get(id=token_data["id"]).update(is_verified=True)
+    except DoesNotExist:
+        return ControllerStatus.INVALID_LINK
+    except OperationError:
+        return ControllerStatus.ERROR
+
+    return ControllerStatus.SUCCESS

@@ -1,7 +1,7 @@
 from apiflask import APIBlueprint, input, output, abort, doc
 from apiflask.schemas import Schema
 
-from ..controllers.auth import register_user, log_in
+from ..controllers.auth import register_user, log_in, verify_token
 from ..controllers.mail import send_email, create_verification_link
 from ..models.auth import RegistrationRequest, LoginRequest, LoginResponse
 from ..utils.enums import ControllerStatus
@@ -45,3 +45,21 @@ def log_in_user(data):
         abort(403)
 
     return {"token": f"Bearer {result[1]}"}
+
+
+@router.get("/verify/<token>")
+@output(Schema)
+@doc(responses={
+    200: "Account was verified successfully",
+    410: "Link has expired and/or its invalid",
+    404: "No token was provided"
+})
+def verify_account(token):
+    result = verify_token(token)
+    if result == ControllerStatus.INVALID_LINK:
+        abort(410)
+
+    if result == ControllerStatus.ERROR:
+        abort(500)
+
+    return ""
