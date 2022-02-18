@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -5,7 +6,10 @@ from os import environ
 from os.path import join, dirname
 from smtplib import SMTP, SMTPException
 
+from jwt import encode
+
 from ..utils.enums import ControllerStatus
+from ..utils.types import token_audiences
 
 
 def compose_body(file_name: str, info: dict[str, str]) -> MIMEText:
@@ -50,3 +54,9 @@ def send_email(subject: str, mail_to: str, template_file: str, template_info: di
         sender.quit()
 
     return ControllerStatus.SUCCESS
+
+
+def create_mail_link(user_id: str, purpose: token_audiences) -> str:
+    verify_token = encode({"id": user_id, "aud": purpose, "exp": (datetime.now(timezone.utc) + timedelta(minutes=11))},
+                          environ["JWT_SECRET"])
+    return f"{environ['FRONT_URL']}/{purpose}/{verify_token}"
