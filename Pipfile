@@ -11,6 +11,10 @@ pyjwt = "~=2.3.0"
 
 [dev-packages]
 python-dotenv = "~=0.19.2"
+mongomock = "~=4.0.0"
+flake8 = "~=4.0.1"
 
 [scripts]
 start = "flask run --reload"
+test = "python -m unittest discover -s ./test -p '*.py'"
+linter = "flake8 . --max-line-length=127 --exclude '.venv','.svn','CVS','.bzr','.hg','.git','__pycache__','.tox','.eggs','*.egg'"
