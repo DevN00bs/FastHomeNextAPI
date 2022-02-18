@@ -93,3 +93,24 @@ def send_account_email(data):
         abort(500)
 
     return ""
+
+
+@router.post("/forgot")
+@input(models.ForgotPasswordRequest)
+@output({}, 204)
+def change_password_mail_link(data):
+    token_data = auth.decode_mail_token(data["token"], "forgot")
+    if token_data[0] == ControllerStatus.INVALID_LINK:
+        abort(410)
+
+    if token_data[0] == ControllerStatus.ERROR:
+        abort(500)
+
+    result = auth.change_password(token_data[1]["id"], data["new_password"])
+    if result == ControllerStatus.DOES_NOT_EXISTS:
+        abort(410)
+
+    if result == ControllerStatus.ERROR:
+        abort(500)
+
+    return ""

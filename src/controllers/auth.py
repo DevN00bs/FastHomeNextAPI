@@ -68,3 +68,13 @@ def get_user_document_by_email(email: str) -> tuple[ControllerStatus, Optional[U
         return ControllerStatus.DOES_NOT_EXISTS, None
     except OperationError:
         return ControllerStatus.ERROR, None
+
+
+def change_password(user_id: str, new_password: str) -> ControllerStatus:
+    try:
+        User.objects.get(id=user_id).update(passwd_hash=generate_password_hash(new_password))
+        return ControllerStatus.SUCCESS
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
+    except OperationError:
+        return ControllerStatus.ERROR

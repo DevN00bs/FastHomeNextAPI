@@ -40,3 +40,8 @@ class LoginResponse(Schema):
 class SendEmailRequest(Schema):
     purpose = String(required=True, validate=OneOf(get_args(token_audiences)))
     email = Email(required=True)
+
+
+class ForgotPasswordRequest(Schema):
+    token = String(required=True)
+    new_password = String(required=True, validate=Length(5))
