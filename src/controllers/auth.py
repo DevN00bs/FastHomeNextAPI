@@ -1,5 +1,5 @@
 from os import environ
-from typing import Any
+from typing import Any, Optional
 
 from jwt import encode, decode, InvalidTokenError
 from mongoengine.errors import OperationError, NotUniqueError, DoesNotExist
@@ -61,3 +61,12 @@ def verify_verification_token(token: str) -> ControllerStatus:
         return ControllerStatus.ERROR
 
     return ControllerStatus.SUCCESS
+
+
+def get_user_document_by_email(email: str) -> tuple[ControllerStatus, Optional[User]]:
+    try:
+        return ControllerStatus.SUCCESS, User.objects.get(email=email)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, None
+    except OperationError:
+        return ControllerStatus.ERROR, None

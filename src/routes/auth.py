@@ -63,3 +63,33 @@ def verify_account(token):
         abort(500)
 
     return ""
+
+
+@router.post("/send")
+@input(models.SendEmailRequest)
+@output(Schema)
+@doc(responses={
+    200: "Email address is valid, but only registered email adresses will receive the message"
+})
+def send_account_email(data):
+    # This should probably not be here
+    email_subjects_dict = {
+        "verify": "Verify your account",
+        "forgot": "Password restoration"
+    }
+
+    user_data = auth.get_user_document_by_email(data["email"])
+    if user_data[0] == ControllerStatus.DOES_NOT_EXISTS:
+        return ""
+
+    if user_data[0] == ControllerStatus.ERROR:
+        abort(500)
+
+    result = mail.send_email(email_subjects_dict[data["purpose"]], data["email"], f"{data['purpose']}.html", {
+        "username": user_data[1]["username"], "link": mail.create_mail_link(str(user_data[1].id), data["purpose"])
+    })
+
+    if result == ControllerStatus.ERROR:
+        abort(500)
+
+    return ""
