@@ -60,7 +60,7 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result == ControllerStatus.SUCCESS
+        assert result[0] == ControllerStatus.SUCCESS
 
     def test_repeated_username(self):
         result = register_user({
@@ -69,7 +69,7 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result == ControllerStatus.ALREADY_EXISTS
+        assert result[0] == ControllerStatus.ALREADY_EXISTS
 
     def test_repeated_email(self):
         result = register_user({
@@ -78,4 +78,4 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result == ControllerStatus.ALREADY_EXISTS
+        assert result[0] == ControllerStatus.ALREADY_EXISTS
