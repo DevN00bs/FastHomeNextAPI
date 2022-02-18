@@ -68,7 +68,7 @@ class AuthTests(TestCase):
             "email": "new@example.net",
             "password": self._password
         })
-        
+
         assert result[0] == ControllerStatus.ALREADY_EXISTS
 
     def test_repeated_email(self):
@@ -77,5 +77,5 @@ class AuthTests(TestCase):
             "email": self._email,
             "password": self._password
         })
-        
+
         assert result[0] == ControllerStatus.ALREADY_EXISTS
