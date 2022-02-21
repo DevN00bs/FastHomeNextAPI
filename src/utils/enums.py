@@ -7,3 +7,6 @@ class ControllerStatus(Enum):
     ALREADY_EXISTS = 2
     WRONG_CREDS = 3
     NOT_VERIFIED = 4
+    INVALID_LINK = 5
+    DOES_NOT_EXISTS = 6
+    UNAUTHORIZED = 7

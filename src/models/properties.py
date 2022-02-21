@@ -1,23 +1,24 @@
-from mongoengine import *
-from apiflask.fields import String, Float, Integer
+import mongoengine as m
 from apiflask import Schema
+from apiflask.fields import String, Float, Integer, Nested
 
-# PropertyDoc - old PropertyCreate
+from ..models.auth import User, PropertyOwnerInfo
 
 
-class PropertyDoc(Document):
-    address = StringField(unique=True)
-    description = StringField()
-    price = DecimalField()
-    terrain_height = DecimalField()
-    terrain_width = DecimalField()
-    bed = IntField()
-    bath = DecimalField()
-    floors = IntField()
-    garage = IntField()
-    photo_list = ListField()
-    contract = StringField()
-    currency = StringField()
+class PropertyDoc(m.Document):
+    address = m.StringField()
+    description = m.StringField()
+    price = m.DecimalField()
+    terrain_height = m.DecimalField()
+    terrain_width = m.DecimalField()
+    bed = m.IntField()
+    bath = m.DecimalField()
+    floors = m.IntField()
+    garage = m.IntField()
+    photo_list = m.ListField()
+    contract = m.StringField()
+    currency = m.StringField()
+    owner = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
     meta = {"collection": "properties"}
 
 
@@ -34,6 +35,7 @@ class PropertyRead(Schema):
     garage = Integer()
     contract = String()
     currency = String()
+    owner = Nested(PropertyOwnerInfo, data_key="owner_info")
 
 
 class NewProperty(Schema):

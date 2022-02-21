@@ -36,11 +36,8 @@ jobs:
           if [ ! -f Pipfile.lock ]; then pipenv lock; fi
           pipenv install --dev --verbose
       - name: Lint with flake8
-        run: |
-          pipenv run error-check
-          pipenv run complexity
+        run: pipenv run linter
       - name: Test with unittest
         env:
           JWT_SECRET: test-secret
-        run: |
-          pipenv run test
+        run: pipenv run test
