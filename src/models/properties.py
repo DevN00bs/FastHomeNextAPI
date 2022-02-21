@@ -2,8 +2,7 @@ import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String, Float, Integer
 
-
-# PropertyDoc - old PropertyCreate
+from ..models.auth import User
 
 
 class PropertyDoc(m.Document):
@@ -19,6 +18,7 @@ class PropertyDoc(m.Document):
     photo_list = m.ListField()
     contract = m.StringField()
     currency = m.StringField()
+    owner = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
     meta = {"collection": "properties"}
 
 
