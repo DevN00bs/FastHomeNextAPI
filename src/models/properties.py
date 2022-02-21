@@ -1,8 +1,13 @@
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Float, Integer, Nested
+from apiflask.fields import String, Float, Integer, Nested, Raw, List
+from apiflask.validators import Length
 
 from ..models.auth import User, PropertyOwnerInfo
+
+
+class PropertyPhoto(m.EmbeddedDocument):
+    photo = m.ImageField(collection_name="photos")
 
 
 class PropertyDoc(m.Document):
@@ -15,7 +20,7 @@ class PropertyDoc(m.Document):
     bath = m.DecimalField()
     floors = m.IntField()
     garage = m.IntField()
-    photo_list = m.ListField()
+    photo_list = m.EmbeddedDocumentListField(PropertyPhoto, max_length=10)
     contract = m.StringField()
     currency = m.StringField()
     owner = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
@@ -69,3 +74,12 @@ class PropertyUpdate(Schema):
 
 class PropertyDelete(Schema):
     id = String(required=True)
+
+
+class UploadPhotosQueryRequest(Schema):
+    id = String(required=True)
+
+
+class UploadPhotosFilesRequest(Schema):
+    main_photo = Raw(type="string", format="binary", required=True)
+    photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
