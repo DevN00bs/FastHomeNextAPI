@@ -1,8 +1,9 @@
-from apiflask import APIBlueprint, input, output, abort, doc
+from apiflask import APIBlueprint, input, output, abort, doc, auth_required
 from apiflask.schemas import Schema
 
 import src.controllers.properties as c
 import src.models.properties as m
+from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
@@ -11,14 +12,10 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 @router.post("/property")
 @input(m.NewProperty)
 @output(Schema, 201)
-@doc(
-    summary='Register properties data',
-    responses={409: 'A property with that address is already registered'})
+@doc(summary='Register properties data')
+@auth_required(auth)
 def create_property(data):
-    result = c.register_prop(data)
-    if result == ControllerStatus.ALREADY_EXISTS:
-        abort(409)
-
+    result = c.register_prop(data, auth.current_user["id"])
     if result == ControllerStatus.ERROR:
         abort(500)
 
@@ -37,21 +34,36 @@ def read_property():
 
 @router.put("/property")
 @input(m.PropertyUpdate)
-@output(Schema, 200)
+@output({}, 204)
 @doc(summary="Update properties based on their ID")
+@auth_required(auth)
 def update_property(data):
-    result = c.update_prop(data)
+    result = c.update_prop(data, auth.current_user["id"])
     if result == ControllerStatus.ERROR:
         abort(500)
+
+    if result == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result == ControllerStatus.UNAUTHORIZED:
+        abort(403)
+
     return ""
 
 
 @router.delete("/property")
 @input(m.PropertyDelete)
-@output(Schema, 200)
+@output({}, 204)
 @doc(summary="Delete properties based on their ID")
+@auth_required(auth)
 def delete_property(data):
-    result = c.delete_prop(data)
+    result = c.delete_prop(data, auth.current_user["id"])
     if result == ControllerStatus.ERROR:
         abort(500)
+
+    if result == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result == ControllerStatus.UNAUTHORIZED:
+        abort(403)
     return ""

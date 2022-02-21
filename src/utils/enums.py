@@ -9,3 +9,4 @@ class ControllerStatus(Enum):
     NOT_VERIFIED = 4
     INVALID_LINK = 5
     DOES_NOT_EXISTS = 6
+    UNAUTHORIZED = 7
