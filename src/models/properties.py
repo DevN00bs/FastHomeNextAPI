@@ -1,8 +1,8 @@
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Float, Integer
+from apiflask.fields import String, Float, Integer, Nested
 
-from ..models.auth import User
+from ..models.auth import User, PropertyOwnerInfo
 
 
 class PropertyDoc(m.Document):
@@ -35,6 +35,7 @@ class PropertyRead(Schema):
     garage = Integer()
     contract = String()
     currency = String()
+    owner = Nested(PropertyOwnerInfo, data_key="owner_info")
 
 
 class NewProperty(Schema):
