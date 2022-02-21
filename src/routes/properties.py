@@ -11,14 +11,9 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 @router.post("/property")
 @input(m.NewProperty)
 @output(Schema, 201)
-@doc(
-    summary='Register properties data',
-    responses={409: 'A property with that address is already registered'})
+@doc(summary='Register properties data')
 def create_property(data):
     result = c.register_prop(data)
-    if result == ControllerStatus.ALREADY_EXISTS:
-        abort(409)
-
     if result == ControllerStatus.ERROR:
         abort(500)
 

@@ -7,7 +7,7 @@ from apiflask.fields import String, Float, Integer
 
 
 class PropertyDoc(m.Document):
-    address = m.StringField(unique=True)
+    address = m.StringField()
     description = m.StringField()
     price = m.DecimalField()
     terrain_height = m.DecimalField()
