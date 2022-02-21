@@ -41,10 +41,20 @@ def update_prop(data, user_id) -> ControllerStatus:
     return ControllerStatus.SUCCESS
 
 
-def delete_prop(data) -> ControllerStatus:
+def delete_prop(data, user_id) -> ControllerStatus:
     try:
-        m.PropertyDoc.objects(id=data["id"]).first().delete()
-        # First to avoid making useless lists
-        return ControllerStatus.SUCCESS
+        required_prop = m.PropertyDoc.objects.get(id=data["id"])
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
     except OperationError:
         return ControllerStatus.ERROR
+
+    if str(required_prop["owner"].id) != user_id:
+        return ControllerStatus.UNAUTHORIZED
+
+    try:
+        required_prop.delete()
+    except OperationError:
+        return ControllerStatus.ERROR
+
+    return ControllerStatus.SUCCESS
