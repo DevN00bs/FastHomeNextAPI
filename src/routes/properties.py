@@ -1,8 +1,9 @@
-from apiflask import APIBlueprint, input, output, abort, doc
+from apiflask import APIBlueprint, input, output, abort, doc, auth_required
 from apiflask.schemas import Schema
 
 import src.controllers.properties as c
 import src.models.properties as m
+from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
@@ -12,8 +13,9 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 @input(m.NewProperty)
 @output(Schema, 201)
 @doc(summary='Register properties data')
+@auth_required(auth)
 def create_property(data):
-    result = c.register_prop(data)
+    result = c.register_prop(data, auth.current_user["id"])
     if result == ControllerStatus.ERROR:
         abort(500)
 

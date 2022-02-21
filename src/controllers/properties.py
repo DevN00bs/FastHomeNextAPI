@@ -4,10 +4,11 @@ import src.models.properties as m
 from ..utils.enums import ControllerStatus
 
 
-def register_prop(data) -> ControllerStatus:
+def register_prop(data, user_id) -> ControllerStatus:
     try:
         m.PropertyDoc(
-            **data
+            **data,
+            owner=user_id
         ).save()
         return ControllerStatus.SUCCESS
     except OperationError:
