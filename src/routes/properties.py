@@ -34,12 +34,20 @@ def read_property():
 
 @router.put("/property")
 @input(m.PropertyUpdate)
-@output(Schema, 200)
+@output({}, 204)
 @doc(summary="Update properties based on their ID")
+@auth_required(auth)
 def update_property(data):
-    result = c.update_prop(data)
+    result = c.update_prop(data, auth.current_user["id"])
     if result == ControllerStatus.ERROR:
         abort(500)
+
+    if result == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result == ControllerStatus.UNAUTHORIZED:
+        abort(403)
+
     return ""
 
 

@@ -1,4 +1,4 @@
-from mongoengine.errors import OperationError
+from mongoengine.errors import OperationError, DoesNotExist
 
 import src.models.properties as m
 from ..utils.enums import ControllerStatus
@@ -22,12 +22,23 @@ def all_props() -> tuple[ControllerStatus, list[m.PropertyDoc]]:
         return ControllerStatus.ERROR, list()
 
 
-def update_prop(data) -> ControllerStatus:
+def update_prop(data, user_id) -> ControllerStatus:
     try:
-        m.PropertyDoc.objects(id=data["id"]).first().update(**data)  # Schema
-        return ControllerStatus.SUCCESS
+        requested_prop = m.PropertyDoc.objects.get(id=data["id"])
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
     except OperationError:
         return ControllerStatus.ERROR
+
+    if str(requested_prop["owner"].id) != user_id:
+        return ControllerStatus.UNAUTHORIZED
+
+    try:
+        requested_prop.update(**data)
+    except OperationError:
+        return ControllerStatus.ERROR
+
+    return ControllerStatus.SUCCESS
 
 
 def delete_prop(data) -> ControllerStatus:
