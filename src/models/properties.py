@@ -7,7 +7,7 @@ from ..models.auth import User, PropertyOwnerInfo
 
 
 class PropertyPhoto(m.EmbeddedDocument):
-    photo = m.ImageField(thumbnail_size=(768, 432, True), collection_name="photos")
+    photo = m.ImageField(size=(1280, 720, True), thumbnail_size=(640, 360, True), collection_name="photos")
 
 
 class PropertyDoc(m.Document):
