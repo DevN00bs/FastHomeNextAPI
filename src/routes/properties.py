@@ -2,6 +2,7 @@ from apiflask import APIBlueprint, input, output, abort, doc, auth_required
 from apiflask.schemas import Schema
 
 import src.controllers.properties as c
+import src.controllers.upload as p
 import src.models.properties as m
 from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
@@ -66,4 +67,26 @@ def delete_property(data):
 
     if result == ControllerStatus.UNAUTHORIZED:
         abort(403)
+    return ""
+
+
+@router.post("/property/photos")
+@input(m.UploadPhotosQueryRequest, location="query")
+@input(m.UploadPhotosFilesRequest, location="files")
+@output({}, 204)
+@auth_required(auth)
+def upload_property_photos(data, files):
+    result = p.upload_properties_photos(data["id"],
+                                        auth.current_user["id"],
+                                        sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
+                                            files["main_photo"]])
+    if result == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result == ControllerStatus.ERROR:
+        abort(500)
+
+    if result == ControllerStatus.UNAUTHORIZED:
+        abort(403)
+
     return ""
