@@ -28,7 +28,7 @@ class PropertyDoc(m.Document):
 
 
 class PropertyRead(Schema):
-    id = String()
+    id = String(data_key="property_id")
     address = String()
     description = String()
     price = Float()
