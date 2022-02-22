@@ -1,4 +1,5 @@
-from mongoengine import DoesNotExist, OperationError
+from bson import ObjectId
+from mongoengine import DoesNotExist, OperationError, ImageGridFsProxy
 from werkzeug.datastructures import FileStorage
 
 from ..models.properties import PropertyDoc, PropertyPhoto
@@ -27,3 +28,8 @@ def upload_properties_photos(prop_id: str, user_id: str, photos: list[FileStorag
         return ControllerStatus.ERROR
 
     return ControllerStatus.SUCCESS
+
+
+def get_photo_from_db(photo_id: str) -> tuple[ImageGridFsProxy, str]:
+    photo = ImageGridFsProxy(ObjectId(photo_id), "photo", collection_name="photos")
+    return photo, photo.format.lower()

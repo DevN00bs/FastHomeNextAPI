@@ -1,4 +1,5 @@
 from apiflask import APIBlueprint, input, output, abort, doc, auth_required
+from flask import send_file
 
 import src.controllers.properties as c
 import src.controllers.upload as p
@@ -89,3 +90,10 @@ def upload_property_photos(data, files):
         abort(403)
 
     return ""
+
+
+@router.get("/property/photo/<id>")
+@doc(hide=True)
+def get_photo(id):
+    result = p.get_photo_from_db(id)
+    return send_file(result[0], mimetype=f"image/{result[1]}")
