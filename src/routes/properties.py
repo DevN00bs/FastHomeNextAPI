@@ -96,4 +96,7 @@ def upload_property_photos(data, files):
 @doc(hide=True)
 def get_photo(id):
     result = p.get_photo_from_db(id)
-    return send_file(result[0], mimetype=f"image/{result[1]}")
+    if result[0] == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    return send_file(result[1], mimetype=f"image/{result[1].format.lower()}")
