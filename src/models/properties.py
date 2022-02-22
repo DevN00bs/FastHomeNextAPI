@@ -1,6 +1,6 @@
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Float, Integer, Nested, Raw, List
+from apiflask.fields import String, Float, Integer, Nested, Raw, List, Function
 from apiflask.validators import Length
 
 from ..models.auth import User, PropertyOwnerInfo
@@ -41,6 +41,7 @@ class PropertyRead(Schema):
     contract = String()
     currency = String()
     owner = Nested(PropertyOwnerInfo, data_key="owner_info")
+    thumbnail_id = Function(lambda prop: str(prop.photo_list.first().photo.thumbnail._id))
 
 
 class NewProperty(Schema):
