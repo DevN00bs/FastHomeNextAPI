@@ -53,6 +53,9 @@ def delete_prop(data, user_id) -> ControllerStatus:
         return ControllerStatus.UNAUTHORIZED
 
     try:
+        for doc in required_prop.photo_list:
+            doc.photo.delete()
+
         required_prop.delete()
     except OperationError:
         return ControllerStatus.ERROR
