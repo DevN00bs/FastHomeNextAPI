@@ -57,6 +57,10 @@ class NewProperty(Schema):
     currency = String(required=True)
 
 
+class NewPropertyResponse(Schema):
+    id = String()
+
+
 class PropertyUpdate(Schema):
     id = String(required=True)
     address = String()

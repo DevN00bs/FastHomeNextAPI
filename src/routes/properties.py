@@ -1,5 +1,4 @@
 from apiflask import APIBlueprint, input, output, abort, doc, auth_required
-from apiflask.schemas import Schema
 
 import src.controllers.properties as c
 import src.controllers.upload as p
@@ -12,15 +11,15 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
 @router.post("/property")
 @input(m.NewProperty)
-@output(Schema, 201)
+@output(m.NewPropertyResponse, 201)
 @doc(summary='Register properties data')
 @auth_required(auth)
 def create_property(data):
     result = c.register_prop(data, auth.current_user["id"])
-    if result == ControllerStatus.ERROR:
+    if result[0] == ControllerStatus.ERROR:
         abort(500)
 
-    return ""
+    return {"id": result[1]}
 
 
 @router.get("/properties")

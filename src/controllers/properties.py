@@ -4,15 +4,15 @@ import src.models.properties as m
 from ..utils.enums import ControllerStatus
 
 
-def register_prop(data, user_id) -> ControllerStatus:
+def register_prop(data, user_id) -> tuple[ControllerStatus, str]:
     try:
-        m.PropertyDoc(
+        new_prop = m.PropertyDoc(
             **data,
             owner=user_id
         ).save()
-        return ControllerStatus.SUCCESS
+        return ControllerStatus.SUCCESS, str(new_prop.id)
     except OperationError:
-        return ControllerStatus.ERROR
+        return ControllerStatus.ERROR, ""
 
 
 def all_props() -> tuple[ControllerStatus, list[m.PropertyDoc]]:
