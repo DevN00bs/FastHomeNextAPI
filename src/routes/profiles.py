@@ -9,16 +9,19 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 
-# Both using profileread works?
-# Uhh I'm kinda sure I need to understand auth to make this and controller
-# Works but so far I advanced these parts
+# Minor advances, but structured maybe...
+# Current user profile's page - config able
+# Same get link cuz just to see info; post for later after admission
 
 
-@router.post("/user")
-@input(m.ProfileRead)
-@output(m.ProfileRead, 200)
-@doc(summary="Post to get current user's info in profile")
+@router.get("/user")
+@output(m.ProfileConfig(many=False), 200)
+@doc(
+    summary="Get profiles in general, if current it'll know - editable's other"
+    )
+# @auth_required(auth)
 def current_profile(data):
+    result = c.read_profile(data, auth.current_user["id"])
     return ""
 
 
@@ -41,6 +44,7 @@ def update_profile(data):
     return ""
 
 
+'''
 @router.delete("/profile")
 @input(m.ProfileDelete)
 @output({}, 204)
@@ -58,3 +62,4 @@ def delete_user(data):
         abort(403)
 
     return ""
+'''

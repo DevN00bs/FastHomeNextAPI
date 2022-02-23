@@ -3,6 +3,9 @@ from apiflask import Schema
 from apiflask.fields import String
 
 
+# Left some fields in case to use them later
+
+
 class ProfileDoc(Document):
     username = StringField(unique=True)
     email = EmailField(unique=True)
@@ -15,7 +18,7 @@ class ProfileDoc(Document):
     meta = {"collection": "profiles"}
 
 
-class ProfileRead(Schema):
+class ProfileConfig(Schema):
     id = String()
     username = String()
     email = String()
@@ -26,8 +29,15 @@ class ProfileRead(Schema):
     twit_link = String()
     # Prop_list
 
-# TODO: Update based on login
-# Hello, welcome to chili's
+
+class ProfileRead(Schema):
+    email = String()
+    phone = String()
+    contact_email = String()
+    fb_link = String()
+    insta_link = String()
+    twit_link = String()
+    # Prop_list
 
 
 class ProfileUpdate(Schema):
