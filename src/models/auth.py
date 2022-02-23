@@ -8,6 +8,9 @@ from mongoengine import Document, StringField, EmailField, BooleanField
 from ..utils.types import token_audiences
 
 
+# TODO: model - controller - routes
+# Borrar (?)
+# Para separar endpoint de controller trabajar embeddeddocs
 class User(Document):
     username = StringField(unique=True)
     email = EmailField(unique=True)
