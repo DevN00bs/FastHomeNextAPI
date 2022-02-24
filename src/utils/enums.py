@@ -10,3 +10,4 @@ class ControllerStatus(Enum):
     INVALID_LINK = 5
     DOES_NOT_EXISTS = 6
     UNAUTHORIZED = 7
+    NOT_AN_IMAGE = 8
