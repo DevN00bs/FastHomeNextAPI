@@ -19,10 +19,10 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 @doc(
     summary="Get profiles in general, if current it'll know - editable's other"
     )
-# @auth_required(auth)
+@auth_required(auth)
 def current_profile(data):
     result = c.read_profile(data, auth.current_user["id"])
-    return ""
+    return result
 
 
 @router.put("/profile")
