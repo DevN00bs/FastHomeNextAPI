@@ -1,11 +1,20 @@
 from typing import Optional
 
 from bson import ObjectId
-from mongoengine import DoesNotExist, OperationError, ImageGridFsProxy
+from mongoengine import DoesNotExist, OperationError, ImageGridFsProxy, ValidationError
 from werkzeug.datastructures import FileStorage
 
 from ..models.properties import PropertyDoc, PropertyPhoto
 from ..utils.enums import ControllerStatus
+from ..utils.types import allowed_mimetypes
+
+
+def check_file_type(photos: list[FileStorage]) -> ControllerStatus:
+    for photo in photos:
+        if photo.mimetype not in allowed_mimetypes:
+            return ControllerStatus.NOT_AN_IMAGE
+
+    return ControllerStatus.SUCCESS
 
 
 def upload_properties_photos(prop_id: str, user_id: str, photos: list[FileStorage]) -> ControllerStatus:
@@ -26,6 +35,8 @@ def upload_properties_photos(prop_id: str, user_id: str, photos: list[FileStorag
             new_doc.photo.name = f"{new_doc.photo.grid_id}.{photo.filename.split('.').pop()}"
 
         requested_prop.save()
+    except ValidationError:
+        return ControllerStatus.NOT_AN_IMAGE
     except OperationError:
         return ControllerStatus.ERROR
 

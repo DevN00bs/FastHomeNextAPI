@@ -76,6 +76,11 @@ def delete_property(data):
 @output({}, 204)
 @auth_required(auth)
 def upload_property_photos(data, files):
+    verify_result = p.check_file_type(sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
+        files["main_photo"]])
+    if verify_result == ControllerStatus.NOT_AN_IMAGE:
+        abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
+
     result = p.upload_properties_photos(data["id"],
                                         auth.current_user["id"],
                                         sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
@@ -88,6 +93,9 @@ def upload_property_photos(data, files):
 
     if result == ControllerStatus.UNAUTHORIZED:
         abort(403)
+
+    if result == ControllerStatus.NOT_AN_IMAGE:
+        abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
 
     return ""
 
