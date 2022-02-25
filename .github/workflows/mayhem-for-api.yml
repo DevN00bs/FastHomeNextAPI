@@ -67,6 +67,19 @@ jobs:
       # mode & send stacktraces back on "500 Internal Server Error" responses
       # (don't do this in production though!)
       - name: Start your API
+        env:
+          FLASK_APP: ${{ secrets.FLASK_APP }}
+          FLASK_ENV: ${{ secrets.FLASK_ENV }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_ADDR: ${{ secrets.MAIL_ADDR }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          FRONT_URL: ${{ secrets.FRONT_URL }}
         run: pipenv run start &
 
       - name: Mayhem for API
