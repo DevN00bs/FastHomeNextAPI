@@ -53,3 +53,8 @@ def get_photo_from_db(photo_id: str) -> tuple[ControllerStatus, Optional[ImageGr
         return ControllerStatus.DOES_NOT_EXISTS, None
 
     return ControllerStatus.SUCCESS, photo
+
+
+def merge_lists(lists: dict[str, FileStorage | list[FileStorage]]) -> list[FileStorage]:
+    return sum([[lists["main_photo"]], lists["photos"]], []) if "photos" in lists else [
+        lists["main_photo"]]

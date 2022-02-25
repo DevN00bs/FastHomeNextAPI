@@ -78,15 +78,11 @@ def delete_property(data):
 @auth_required(auth)
 # First parameter is the "hack" request, it serves no purpose internally
 def upload_property_photos(_, data, files):
-    verify_result = p.check_file_type(sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
-        files["main_photo"]])
+    verify_result = p.check_file_type(p.merge_lists(files))
     if verify_result == ControllerStatus.NOT_AN_IMAGE:
         abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
 
-    result = p.upload_properties_photos(data["id"],
-                                        auth.current_user["id"],
-                                        sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
-                                            files["main_photo"]])
+    result = p.upload_properties_photos(data["id"], auth.current_user["id"], p.merge_lists(files))
     if result == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
 
