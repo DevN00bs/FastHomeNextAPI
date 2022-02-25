@@ -25,6 +25,10 @@ def upload_properties_photos(prop_id: str, user_id: str, photos: list[FileStorag
     except OperationError:
         return ControllerStatus.ERROR
 
+    # This is a safety check, uploading pictures to a property that already has them messes things up
+    if requested_prop.photo_list.first() is not None:
+        return ControllerStatus.ALREADY_EXISTS
+
     if str(requested_prop.owner.id) != user_id:
         return ControllerStatus.UNAUTHORIZED
 

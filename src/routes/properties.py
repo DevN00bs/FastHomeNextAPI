@@ -99,6 +99,9 @@ def upload_property_photos(_, data, files):
     if result == ControllerStatus.NOT_AN_IMAGE:
         abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
 
+    if result == ControllerStatus.ALREADY_EXISTS:
+        abort(400, "This property already has photos. Please, use the PUT endpoint (not existant yet, sorry)")
+
     return ""
 
 
