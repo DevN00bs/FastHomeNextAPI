@@ -4,7 +4,6 @@ from apiflask import APIFlask
 from mongoengine import connect
 from .routes.auth import router as auth
 from .routes.properties import router as prop
-# TEST
 
 app = APIFlask(__name__,
                title="FastHome API",
