@@ -1,58 +1,32 @@
-from mongoengine import Document, StringField, EmailField
+import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String
 
+from ..models.auth import User
 
-# Left some fields in case to use them later
 
-
-class ProfileDoc(Document):
-    username = StringField(unique=True)
-    email = EmailField(unique=True)
-    phone = StringField()
-    contact_email = StringField()
-    fb_link = StringField()
-    insta_link = StringField()
-    twit_link = StringField()
-    # prop_list
+class ProfileDoc(m.Document):
+    username = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
+    email = m.EmailField(unique=True)
+    phone = m.StringField()
+    contact_email = m.StringField()
+    fb_link = m.StringField()
+    insta_link = m.StringField()
+    twit_link = m.StringField()
     meta = {"collection": "profiles"}
 
 
-class ProfileConfig(Schema):
-    id = String()
-    username = String()
-    email = String()
+class ProfileData(Schema):
     phone = String()
     contact_email = String()
     fb_link = String()
     insta_link = String()
     twit_link = String()
-    # Prop_list
-
-
-class ProfileRead(Schema):
-    email = String()
-    phone = String()
-    contact_email = String()
-    fb_link = String()
-    insta_link = String()
-    twit_link = String()
-    # Prop_list
 
 
 class ProfileUpdate(Schema):
-    id = String(required=True)
-    username = String()
-    email = String()
     phone = String()
     contact_email = String()
     fb_link = String()
     insta_link = String()
     twit_link = String()
-    # Prop_list
-
-# TODO: Delete account (?)
-
-
-class ProfileDelete(Schema):
-    id = String(required=True)

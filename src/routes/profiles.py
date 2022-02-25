@@ -9,20 +9,19 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 
-# Minor advances, but structured maybe...
-# Current user profile's page - config able
-# Same get link cuz just to see info; post for later after admission
+# Get no endpoint para perfil, dentro de la propiedad *arriba
+# Random note over there, just leave it behind
 
 
-@router.get("/user")
-@output(m.ProfileConfig(many=False), 200)
+@router.get("/profile")
+@output(m.ProfileData(), 200)
 @doc(
-    summary="Get profiles in general, if current it'll know - editable's other"
+    summary="Get current user's profile - contact"
     )
 @auth_required(auth)
-def current_profile(data):
-    result = c.read_profile(data, auth.current_user["id"])
-    return result
+def get_profile(data):
+    current = c.read_prof(data, auth.current_user["id"])
+    return current
 
 
 @router.put("/profile")
