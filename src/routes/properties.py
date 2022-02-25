@@ -24,7 +24,7 @@ def create_property(data):
 
 
 @router.get("/properties")
-@output(m.PropertyRead(many=True), 200)
+@output(m.BasicPropertyRead(many=True), 200)
 @doc(summary='Get properties info')
 def read_property():
     result = c.all_props()

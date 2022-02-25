@@ -27,10 +27,9 @@ class PropertyDoc(m.Document):
     meta = {"collection": "properties"}
 
 
-class PropertyRead(Schema):
+class BasicPropertyRead(Schema):
     id = String(data_key="property_id")
     address = String()
-    description = String()
     price = Float()
     terrain_height = Float()
     terrain_width = Float()
@@ -40,7 +39,7 @@ class PropertyRead(Schema):
     garage = Integer()
     contract = String()
     currency = String()
-    owner = Nested(PropertyOwnerInfo, data_key="owner_info")
+    owner_username = Function(lambda prop: prop.owner.username)
     thumbnail_id = Function(lambda prop: str(prop.photo_list.first().photo.thumbnail._id))
 
 
