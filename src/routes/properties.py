@@ -71,11 +71,13 @@ def delete_property(data):
 
 
 @router.post("/property/photos")
-@input(m.UploadPhotosQueryRequest, location="query")
+@input(m.UploadPhotosRequest)
+@input(m.UploadPhotosQueryRequest, location="form")
 @input(m.UploadPhotosFilesRequest, location="files")
 @output({}, 204)
 @auth_required(auth)
-def upload_property_photos(data, files):
+# First parameter is the "hack" request, it serves no purpose internally
+def upload_property_photos(_, data, files):
     verify_result = p.check_file_type(sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
         files["main_photo"]])
     if verify_result == ControllerStatus.NOT_AN_IMAGE:

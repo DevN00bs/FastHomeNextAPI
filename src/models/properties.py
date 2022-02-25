@@ -88,3 +88,9 @@ class UploadPhotosQueryRequest(Schema):
 class UploadPhotosFilesRequest(Schema):
     main_photo = Raw(type="string", format="binary", required=True)
     photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
+
+
+class UploadPhotosRequest(Schema):
+    id = String()
+    main_photo = Raw(type="string", format="binary")
+    photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
