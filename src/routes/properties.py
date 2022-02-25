@@ -75,6 +75,12 @@ def delete_property(data):
 @output(m.PropertyDataResponse)
 def get_property_data(data):
     result = c.get_property_data(data["id"])
+    if result[0] == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result[0] == ControllerStatus.ERROR:
+        abort(500)
+
     return result[1]
 
 
