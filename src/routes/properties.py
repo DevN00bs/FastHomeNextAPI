@@ -70,6 +70,14 @@ def delete_property(data):
     return ""
 
 
+@router.get("/property")
+@input(m.PropertyDataRequest, location="query")
+@output(m.PropertyDataResponse)
+def get_property_data(data):
+    result = c.get_property_data(data["id"])
+    return result[1]
+
+
 @router.post("/property/photos")
 @input(m.UploadPhotosRequest)
 @input(m.UploadPhotosQueryRequest, location="form")

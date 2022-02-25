@@ -27,6 +27,26 @@ class PropertyDoc(m.Document):
     meta = {"collection": "properties"}
 
 
+class PropertyDataResponse(Schema):
+    address = String()
+    description = String()
+    price = Float()
+    terrain_height = Float()
+    terrain_width = Float()
+    bed = Integer()
+    bath = Float()
+    floors = Integer()
+    garage = Integer()
+    contract = String()
+    currency = String()
+    owner = Nested(PropertyOwnerInfo, data_key="owner_info")
+    photo_ids = Function(lambda prop: [str(doc.photo.grid_id) for doc in prop.photo_list])
+
+
+class PropertyDataRequest(Schema):
+    id = String(required=True)
+
+
 class BasicPropertyRead(Schema):
     id = String(data_key="property_id")
     address = String()
