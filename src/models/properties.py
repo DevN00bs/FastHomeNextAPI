@@ -27,8 +27,7 @@ class PropertyDoc(m.Document):
     meta = {"collection": "properties"}
 
 
-class PropertyRead(Schema):
-    id = String(data_key="property_id")
+class PropertyDataResponse(Schema):
     address = String()
     description = String()
     price = Float()
@@ -41,6 +40,26 @@ class PropertyRead(Schema):
     contract = String()
     currency = String()
     owner = Nested(PropertyOwnerInfo, data_key="owner_info")
+    photo_ids = Function(lambda prop: [str(doc.photo.grid_id) for doc in prop.photo_list])
+
+
+class PropertyDataRequest(Schema):
+    id = String(required=True)
+
+
+class BasicPropertyRead(Schema):
+    id = String(data_key="property_id")
+    address = String()
+    price = Float()
+    terrain_height = Float()
+    terrain_width = Float()
+    bed = Integer()
+    bath = Float()
+    floors = Integer()
+    garage = Integer()
+    contract = String()
+    currency = String()
+    owner_username = Function(lambda prop: prop.owner.username)
     thumbnail_id = Function(lambda prop: str(prop.photo_list.first().photo.thumbnail._id))
 
 
@@ -87,4 +106,10 @@ class UploadPhotosQueryRequest(Schema):
 
 class UploadPhotosFilesRequest(Schema):
     main_photo = Raw(type="string", format="binary", required=True)
+    photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
+
+
+class UploadPhotosRequest(Schema):
+    id = String()
+    main_photo = Raw(type="string", format="binary")
     photos = List(Raw(type="string", format="binary"), validate=Length(max=9))

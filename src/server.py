@@ -2,6 +2,7 @@ from os import environ
 
 from apiflask import APIFlask
 from mongoengine import connect
+
 from .routes.auth import router as auth
 from .routes.properties import router as prop
 
@@ -14,6 +15,25 @@ connect(
     password=environ["DB_PASS"],
     db=environ["DB_NAME"]
 )
+
+
+@app.spec_processor
+def edit_spec(spec):
+    # Remove the actual schemas from the documentation, those won't work
+    # The schemas still exist internally because of validation
+    # This only affects the OpenAPI schema
+    spec["paths"]["/api/property/photos"]["post"]["parameters"] = []
+    # Change the content type of the request from "application/json" to "multipart/form-data"
+    # It's the only way Swagger UI understands file uploads
+    spec["paths"]["/api/property/photos"]["post"]["requestBody"]["content"]["multipart/form-data"] = \
+        spec["paths"]["/api/property/photos"]["post"]["requestBody"]["content"][
+            "application/json"]
+    # Remove the "application/json" content type from the documentation
+    del spec["paths"]["/api/property/photos"]["post"]["requestBody"]["content"]["application/json"]
+    # Then we mark some parameters as required
+    spec["components"]["schemas"]["UploadPhotosRequest"]["required"] = ["id", "main_photo"]
+    return spec
+
 
 app.register_blueprint(auth)
 app.register_blueprint(prop)

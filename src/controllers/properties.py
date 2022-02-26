@@ -1,3 +1,5 @@
+from typing import Optional
+
 from mongoengine.errors import OperationError, DoesNotExist
 
 import src.models.properties as m
@@ -61,3 +63,14 @@ def delete_prop(data, user_id) -> ControllerStatus:
         return ControllerStatus.ERROR
 
     return ControllerStatus.SUCCESS
+
+
+def get_property_data(prop_id: str) -> tuple[ControllerStatus, Optional[m.PropertyDoc]]:
+    try:
+        requested_prop = m.PropertyDoc.objects.get(id=prop_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, None
+    except OperationError:
+        return ControllerStatus.ERROR, None
+
+    return ControllerStatus.SUCCESS, requested_prop
