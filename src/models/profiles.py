@@ -1,12 +1,12 @@
+from cProfile import label
 import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String
 
 from ..models.auth import User
 
-
 class ProfileDoc(m.Document):
-    username = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
+    user = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
     email = m.EmailField(unique=True)
     phone = m.StringField()
     contact_email = m.StringField()

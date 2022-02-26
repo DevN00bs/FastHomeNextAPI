@@ -1,5 +1,3 @@
-# Endpoints
-
 from apiflask import APIBlueprint, abort, auth_required, doc, input, output
 
 import src.controllers.profiles as c
@@ -14,20 +12,20 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 
 
 @router.get("/profile")
-@output(m.ProfileData(), 200)
+@output(m.ProfileData(many=True), 200)
 @doc(
     summary="Get current user's profile - contact"
     )
 @auth_required(auth)
-def get_profile(data):
-    current = c.read_prof(data, auth.current_user["id"])
-    return current
+def get_profile():
+    current = c.read_prof()
+    return current[1]
 
 
 @router.put("/profile")
 @input(m.ProfileUpdate)
 @output({}, 204)
-@doc(summary="Update current user's profile info based on ID and auth")
+@doc(summary="Update current user's profile info based on auth")
 @auth_required(auth)
 def update_profile(data):
     result = c.update_prof(data, auth.current_user["id"])
