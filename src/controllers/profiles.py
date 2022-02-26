@@ -1,24 +1,36 @@
 from mongoengine.errors import OperationError, DoesNotExist
 
-import src.models.profiles as m
+# Import src.models.properties as prop
+import src.models.profiles as prof
 from ..utils.enums import ControllerStatus
 from ..utils.auth import auth
 
-# Get the user profile - idk if it stills a tuple
+# Get the user profile
+# I need help on knowing how to bring the id by clicking
+# A "property" so it can be taken there from it xD
 
 
-def read_prof() -> ControllerStatus:
+def read_prof(user_id) -> ControllerStatus:
+    user_id = auth.current_user
     try:
-        return ControllerStatus.SUCCESS, m.ProfileDoc.objects
+        # prop_owner = prop.PropertyDoc.objects.get(id=data["id"])
+        prof_id = prof.ProfileDoc.objects.get()
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
     except OperationError:
         return ControllerStatus.ERROR
+
+    # Here instead of current, goes owner and uncomment prop owner above
+    if str(user_id["id"]) == str(prof_id["user"].id):
+        
+        return prof.ProfileDoc.objects
 
 
 # Update profile - owner like field to be created, idk what to do
 
 
 def update_prof(data, user_id) -> ControllerStatus:
-    prof_info = m.ProfileDoc
+    prof_info = prof.ProfileDoc
 
     if str(user_id == auth.current_user):
         try:
@@ -39,26 +51,3 @@ def update_prof(data, user_id) -> ControllerStatus:
             return ControllerStatus.ERROR
     
     return ControllerStatus.SUCCESS
-
-
-# Delete profile - NOT YET
-
-'''
-def delete_prof(data, user_id) -> ControllerStatus:
-    try:
-        req_prof = m.ProfileDoc.objects.get(id=data["id"])
-    except DoesNotExist:
-        return ControllerStatus.DOES_NOT_EXISTS
-    except OperationError:
-        return ControllerStatus.ERROR
-
-    if str(req_prof["owner"].id) != user_id:
-        return ControllerStatus.UNAUTHORIZED
-
-    try:
-        req_prof.delete()
-    except OperationError:
-        return ControllerStatus.ERROR
-
-    return ControllerStatus.SUCCESS
-'''

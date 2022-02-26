@@ -1,4 +1,3 @@
-from cProfile import label
 import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String

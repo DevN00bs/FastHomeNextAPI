@@ -18,8 +18,8 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
     )
 @auth_required(auth)
 def get_profile():
-    current = c.read_prof()
-    return current[1]
+    current = c.read_prof(auth.current_user)
+    return current
 
 
 @router.put("/profile")
@@ -39,24 +39,3 @@ def update_profile(data):
         abort(403)
 
     return ""
-
-
-'''
-@router.delete("/profile")
-@input(m.ProfileDelete)
-@output({}, 204)
-@doc(summary="Delete current user's account - might change then")
-@auth_required(auth)
-def delete_user(data):
-    result = c.delete_prof(data, auth.current_user["id"])
-    if result == ControllerStatus.ERROR:
-        abort(500)
-
-    if result == ControllerStatus.DOES_NOT_EXISTS:
-        abort(404)
-
-    if result == ControllerStatus.UNAUTHORIZED:
-        abort(403)
-
-    return ""
-'''
