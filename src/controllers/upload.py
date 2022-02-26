@@ -25,6 +25,10 @@ def upload_properties_photos(prop_id: str, user_id: str, photos: list[FileStorag
     except OperationError:
         return ControllerStatus.ERROR
 
+    # This is a safety check, uploading pictures to a property that already has them messes things up
+    if requested_prop.photo_list.first() is not None:
+        return ControllerStatus.ALREADY_EXISTS
+
     if str(requested_prop.owner.id) != user_id:
         return ControllerStatus.UNAUTHORIZED
 
@@ -49,3 +53,8 @@ def get_photo_from_db(photo_id: str) -> tuple[ControllerStatus, Optional[ImageGr
         return ControllerStatus.DOES_NOT_EXISTS, None
 
     return ControllerStatus.SUCCESS, photo
+
+
+def merge_lists(lists: dict[str, FileStorage | list[FileStorage]]) -> list[FileStorage]:
+    return sum([[lists["main_photo"]], lists["photos"]], []) if "photos" in lists else [
+        lists["main_photo"]]

@@ -24,7 +24,7 @@ def create_property(data):
 
 
 @router.get("/properties")
-@output(m.PropertyRead(many=True), 200)
+@output(m.BasicPropertyRead(many=True), 200)
 @doc(summary='Get properties info')
 def read_property():
     result = c.all_props()
@@ -70,21 +70,33 @@ def delete_property(data):
     return ""
 
 
+@router.get("/property")
+@input(m.PropertyDataRequest, location="query")
+@output(m.PropertyDataResponse)
+def get_property_data(data):
+    result = c.get_property_data(data["id"])
+    if result[0] == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
+    if result[0] == ControllerStatus.ERROR:
+        abort(500)
+
+    return result[1]
+
+
 @router.post("/property/photos")
-@input(m.UploadPhotosQueryRequest, location="query")
+@input(m.UploadPhotosRequest)
+@input(m.UploadPhotosQueryRequest, location="form")
 @input(m.UploadPhotosFilesRequest, location="files")
 @output({}, 204)
 @auth_required(auth)
-def upload_property_photos(data, files):
-    verify_result = p.check_file_type(sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
-        files["main_photo"]])
+# First parameter is the "hack" request, it serves no purpose internally
+def upload_property_photos(_, data, files):
+    verify_result = p.check_file_type(p.merge_lists(files))
     if verify_result == ControllerStatus.NOT_AN_IMAGE:
         abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
 
-    result = p.upload_properties_photos(data["id"],
-                                        auth.current_user["id"],
-                                        sum([[files["main_photo"]], files["photos"]], []) if "photos" in files else [
-                                            files["main_photo"]])
+    result = p.upload_properties_photos(data["id"], auth.current_user["id"], p.merge_lists(files))
     if result == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
 
@@ -96,6 +108,9 @@ def upload_property_photos(data, files):
 
     if result == ControllerStatus.NOT_AN_IMAGE:
         abort(400, "Endpoint only accepts JPG, PNG and WEBP images")
+
+    if result == ControllerStatus.ALREADY_EXISTS:
+        abort(400, "This property already has photos. Please, use the PUT endpoint (not existant yet, sorry)")
 
     return ""
 
