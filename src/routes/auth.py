@@ -1,5 +1,4 @@
 from apiflask import APIBlueprint, input, output, abort, doc
-from apiflask.schemas import Schema
 
 import src.controllers.auth as auth
 import src.controllers.mail as mail
@@ -11,7 +10,7 @@ router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth"
 
 @router.post("/register")
 @input(models.RegistrationRequest)
-@output(Schema, 201)
+@output({})
 @doc(responses={409: "A user with that username and/or e-mail is already registered"})
 def create_user(data):
     result = auth.register_user(data)
@@ -48,9 +47,9 @@ def log_in_user(data):
 
 
 @router.get("/verify/<token>")
-@output(Schema)
+@output({})
 @doc(responses={
-    200: "Account was verified successfully",
+    204: "Account was verified successfully",
     410: "Link has expired and/or its invalid",
     404: "No token was provided"
 })
@@ -67,9 +66,9 @@ def verify_account(token):
 
 @router.post("/send")
 @input(models.SendEmailRequest)
-@output(Schema)
+@output({})
 @doc(responses={
-    200: "Email address is valid, but only registered email adresses will receive the message"
+    204: "Email address is valid, but only registered email adresses will receive the message"
 })
 def send_account_email(data):
     # This should probably not be here
@@ -97,7 +96,7 @@ def send_account_email(data):
 
 @router.post("/forgot")
 @input(models.ForgotPasswordRequest)
-@output({}, 204)
+@output({})
 def change_password_mail_link(data):
     token_data = auth.decode_mail_token(data["token"], "forgot")
     if token_data[0] == ControllerStatus.INVALID_LINK:
