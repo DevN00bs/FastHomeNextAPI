@@ -12,7 +12,7 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 
 
 @router.get("/profile")
-@output(m.ProfileData(many=True), 200)
+@output(m.ProfileData, 200)
 @doc(
     summary="Get current user's profile - contact"
     )
@@ -23,7 +23,7 @@ def get_profile():
 
 
 @router.put("/profile")
-@input(m.ProfileUpdate)
+@input(m.ProfileData)
 @output({}, 204)
 @doc(summary="Update current user's profile info based on auth")
 @auth_required(auth)

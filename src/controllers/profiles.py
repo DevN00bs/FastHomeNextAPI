@@ -11,9 +11,7 @@ from ..utils.auth import auth
 
 
 def read_prof(user_id) -> ControllerStatus:
-    user_id = auth.current_user
     try:
-        # prop_owner = prop.PropertyDoc.objects.get(id=data["id"])
         prof_id = prof.ProfileDoc.objects.get()
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS
@@ -21,8 +19,8 @@ def read_prof(user_id) -> ControllerStatus:
         return ControllerStatus.ERROR
 
     # Here instead of current, goes owner and uncomment prop owner above
-    if str(user_id["id"]) == str(prof_id["user"].id):
-        
+    if user_id["id"] == prof_id["user"].id:
+
         return prof.ProfileDoc.objects
 
 
@@ -35,19 +33,13 @@ def update_prof(data, user_id) -> ControllerStatus:
     if str(user_id == auth.current_user):
         try:
             if data["phone"] == "string":
-                try:
-                    prof_info(
-                        **data,
-                        user=user_id
-                        ).save()
-                except OperationError:
-                    return ControllerStatus.ERROR
+                prof_info(
+                    **data,
+                    user=user_id
+                    ).save()
             else:
-                try:
-                    prof_info.objects.update(**data)
-                except OperationError:
-                    return ControllerStatus.ERROR
+                prof_info.objects.update(**data)
         except OperationError:
             return ControllerStatus.ERROR
-    
+
     return ControllerStatus.SUCCESS

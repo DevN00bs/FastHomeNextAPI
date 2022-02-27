@@ -4,9 +4,9 @@ from apiflask.fields import String
 
 from ..models.auth import User
 
+
 class ProfileDoc(m.Document):
     user = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
-    email = m.EmailField(unique=True)
     phone = m.StringField()
     contact_email = m.StringField()
     fb_link = m.StringField()
@@ -16,14 +16,6 @@ class ProfileDoc(m.Document):
 
 
 class ProfileData(Schema):
-    phone = String()
-    contact_email = String()
-    fb_link = String()
-    insta_link = String()
-    twit_link = String()
-
-
-class ProfileUpdate(Schema):
     phone = String()
     contact_email = String()
     fb_link = String()
