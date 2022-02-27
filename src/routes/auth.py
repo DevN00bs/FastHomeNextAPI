@@ -11,7 +11,8 @@ router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth"
 @router.post("/register")
 @input(models.RegistrationRequest)
 @output({})
-@doc(responses={409: "A user with that username and/or e-mail is already registered"})
+@doc(responses={204: "User was registered successfully",
+                409: "A user with that username and/or e-mail is already registered"})
 def create_user(data):
     result = auth.register_user(data)
     if result[0] == ControllerStatus.ALREADY_EXISTS:
@@ -31,7 +32,8 @@ def create_user(data):
 @router.post("/login")
 @input(models.LoginRequest)
 @output(models.LoginResponse)
-@doc(responses={401: "Username and/or password combination is incorrect", 403: "Your account hasn't been verified yet"})
+@doc(responses={200: "Credentials are correct and we return the user's bearer token",
+                401: "Username and/or password combination is incorrect", 403: "Your account hasn't been verified yet"})
 def log_in_user(data):
     result = auth.log_in(data)
     if result[0] == ControllerStatus.ERROR:
@@ -50,7 +52,7 @@ def log_in_user(data):
 @output({})
 @doc(responses={
     204: "Account was verified successfully",
-    410: "Link has expired and/or its invalid",
+    410: "Link has expired and/or it's invalid",
     404: "No token was provided"
 })
 def verify_account(token):
@@ -68,7 +70,7 @@ def verify_account(token):
 @input(models.SendEmailRequest)
 @output({})
 @doc(responses={
-    204: "Email address is valid, but only registered email adresses will receive the message"
+    204: "Email address is valid, but only registered email adresses will be sent a message"
 })
 def send_account_email(data):
     # This should probably not be here
@@ -97,6 +99,10 @@ def send_account_email(data):
 @router.post("/forgot")
 @input(models.ForgotPasswordRequest)
 @output({})
+@doc(responses={
+    204: "Password was changed successfully",
+    410: "Link has expired and/or it's invalid",
+})
 def change_password_mail_link(data):
     token_data = auth.decode_mail_token(data["token"], "forgot")
     if token_data[0] == ControllerStatus.INVALID_LINK:
