@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 from marshmallow import ValidationError
 
 token_audiences: type = Literal["verify", "forgot"]
+contract_types: type = Literal["sale", "rent"]
 
 allowed_mimetypes = [
     "image/jpeg",
