@@ -1,18 +1,15 @@
+from email.policy import default
 import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String
 
-from ..models.auth import User
 
-
-class ProfileDoc(m.Document):
-    user = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
-    phone = m.StringField()
-    contact_email = m.StringField()
-    fb_link = m.StringField()
-    insta_link = m.StringField()
-    twit_link = m.StringField()
-    meta = {"collection": "profiles"}
+class ProfileDoc(m.EmbeddedDocument):
+    phone = m.StringField(default="")
+    contact_email = m.StringField(default="")
+    fb_link = m.StringField(default="")
+    insta_link = m.StringField(default="")
+    twit_link = m.StringField(default="")
 
 
 class ProfileData(Schema):

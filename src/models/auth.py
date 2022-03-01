@@ -1,27 +1,22 @@
+from email.policy import default
 from typing import get_args
 
 from apiflask.fields import String, Email
 from apiflask.schemas import Schema
 from apiflask.validators import Length, OneOf
-from mongoengine import Document, StringField, EmailField, BooleanField
+from mongoengine import Document, StringField, EmailField, BooleanField, EmbeddedDocumentField
 
 from ..utils.types import token_audiences
+from ..models.profiles import ProfileDoc
 
 
-# TODO: model - controller - routes
-# Borrar (?)
-# Para separar endpoint de controller trabajar embeddeddocs
 class User(Document):
     username = StringField(unique=True)
     email = EmailField(unique=True)
     passwd_hash = StringField()
     is_verified = BooleanField(default=True)
     last_token = StringField()
-    phone = StringField()
-    contact_email = StringField()
-    fb_link = StringField()
-    insta_link = StringField()
-    twit_link = StringField()
+    profile = EmbeddedDocumentField(ProfileDoc, default=ProfileDoc())
     meta = {"collection": "users"}
 
 

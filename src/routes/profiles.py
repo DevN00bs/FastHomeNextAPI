@@ -19,6 +19,12 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 @auth_required(auth)
 def get_profile():
     current = c.read_prof(auth.current_user["id"])
+    if current == ControllerStatus.ERROR:
+        abort(500)
+
+    if current == ControllerStatus.DOES_NOT_EXISTS:
+        abort(404)
+
     return current
 
 
@@ -34,8 +40,5 @@ def update_profile(data):
 
     if result == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
-
-    if result == ControllerStatus.UNAUTHORIZED:
-        abort(403)
 
     return ""
