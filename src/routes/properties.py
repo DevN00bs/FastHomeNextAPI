@@ -14,7 +14,8 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 @router.post("/property")
 @input(m.NewProperty, example=ex.post_property_request_example)
 @output(m.NewPropertyResponse, 201, example=ex.post_property_response_example)
-@doc(summary='Register properties data')
+@doc(summary='Create a new property and returns its ID',
+     description="Note: After calling this route, you need to upload at least 1 image using the 'photos' route, otherwise it won't be considered valid")
 @auth_required(auth)
 def create_property(data):
     result = c.register_prop(data, auth.current_user["id"])
@@ -26,7 +27,7 @@ def create_property(data):
 
 @router.get("/properties")
 @output(m.BasicPropertyRead(many=True), example=ex.get_properties_response_example)
-@doc(summary='Get properties info')
+@doc(summary='Get a list of properties')
 def read_property():
     result = c.all_props()
     if result[0] == ControllerStatus.ERROR:
@@ -37,7 +38,7 @@ def read_property():
 @router.put("/property")
 @input(m.PropertyUpdate, examples=ex.put_property_request_examples)
 @output({}, 204)
-@doc(summary="Update properties based on their ID")
+@doc(summary="Update a property's details")
 @auth_required(auth)
 def update_property(data):
     result = c.update_prop(data, auth.current_user["id"])
@@ -56,7 +57,7 @@ def update_property(data):
 @router.delete("/property")
 @input(m.PropertyDelete, example=ex.delete_property_request_example)
 @output({}, 204)
-@doc(summary="Delete properties based on their ID")
+@doc(summary="Delete a property")
 @auth_required(auth)
 def delete_property(data):
     result = c.delete_prop(data, auth.current_user["id"])
@@ -74,6 +75,7 @@ def delete_property(data):
 @router.get("/property")
 @input(m.PropertyDataRequest, location="query", example=ex.get_property_request_example)
 @output(m.PropertyDataResponse, example=ex.get_property_response_example)
+@doc(summary="Get full details of a property")
 def get_property_data(data):
     result = c.get_property_data(data["id"])
     if result[0] == ControllerStatus.DOES_NOT_EXISTS:
@@ -90,6 +92,7 @@ def get_property_data(data):
 @input(m.UploadPhotosQueryRequest, location="form")
 @input(m.UploadPhotosFilesRequest, location="files")
 @output({}, 204)
+@doc(summary="Upload property's photos")
 @auth_required(auth)
 # First parameter is the "hack" request, it serves no purpose internally
 def upload_property_photos(_, data, files):
