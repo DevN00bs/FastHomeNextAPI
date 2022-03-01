@@ -4,6 +4,7 @@ from flask import send_file
 import src.controllers.properties as c
 import src.controllers.upload as p
 import src.models.properties as m
+import src.utils.examples as ex
 from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
 
@@ -11,8 +12,8 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 
 
 @router.post("/property")
-@input(m.NewProperty)
-@output(m.NewPropertyResponse, 201)
+@input(m.NewProperty, example=ex.post_property_request_example)
+@output(m.NewPropertyResponse, 201, example=ex.post_property_response_example)
 @doc(summary='Register properties data')
 @auth_required(auth)
 def create_property(data):
@@ -24,7 +25,7 @@ def create_property(data):
 
 
 @router.get("/properties")
-@output(m.BasicPropertyRead(many=True), 200)
+@output(m.BasicPropertyRead(many=True), example=ex.get_properties_response_example)
 @doc(summary='Get properties info')
 def read_property():
     result = c.all_props()
@@ -34,7 +35,7 @@ def read_property():
 
 
 @router.put("/property")
-@input(m.PropertyUpdate)
+@input(m.PropertyUpdate, examples=ex.put_property_request_examples)
 @output({}, 204)
 @doc(summary="Update properties based on their ID")
 @auth_required(auth)
@@ -53,7 +54,7 @@ def update_property(data):
 
 
 @router.delete("/property")
-@input(m.PropertyDelete)
+@input(m.PropertyDelete, example=ex.delete_property_request_example)
 @output({}, 204)
 @doc(summary="Delete properties based on their ID")
 @auth_required(auth)
@@ -71,8 +72,8 @@ def delete_property(data):
 
 
 @router.get("/property")
-@input(m.PropertyDataRequest, location="query")
-@output(m.PropertyDataResponse)
+@input(m.PropertyDataRequest, location="query", example=ex.get_property_request_example)
+@output(m.PropertyDataResponse, example=ex.get_property_response_example)
 def get_property_data(data):
     result = c.get_property_data(data["id"])
     if result[0] == ControllerStatus.DOES_NOT_EXISTS:
