@@ -1,9 +1,8 @@
 from mongoengine.errors import OperationError, DoesNotExist
 
 # Import src.models.properties as prop
-import src.models.profiles as prof
+import src.models.auth as prof
 from ..utils.enums import ControllerStatus
-from ..utils.auth import auth
 
 # Get the user profile
 # I need help on knowing how to bring the id by clicking
@@ -12,7 +11,7 @@ from ..utils.auth import auth
 
 def read_prof(user_id) -> ControllerStatus:
     try:
-        prof_id = prof.ProfileDoc.objects.get(id=user_id)
+        prof_id = prof.User.objects.get(id=user_id).profile
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS
     except OperationError:
@@ -22,17 +21,11 @@ def read_prof(user_id) -> ControllerStatus:
 
 
 def update_prof(data, user_id) -> ControllerStatus:
-    prof_info = prof.ProfileDoc
 
     try:
-        # Embedded pending
-        if data["phone"] == "string":
-            prof_info(
-                **data,
-                user=user_id
-                ).save()
-        else:
-            prof_info.objects.update(**data)
+        prof.User.objects.get(id=user_id).profile.update(**data)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
     except OperationError:
         return ControllerStatus.ERROR
 
