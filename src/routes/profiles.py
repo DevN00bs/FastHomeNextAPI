@@ -12,7 +12,7 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 @output(m.ProfileData, 200)
 @doc(
     summary="Get current user's profile - contact"
-    )
+)
 @auth_required(auth)
 def get_profile():
     current = c.read_prof(auth.current_user["id"])

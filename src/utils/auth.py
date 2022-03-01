@@ -9,8 +9,6 @@ auth = HTTPTokenAuth()
 @auth.verify_token
 def verify_token(token):
     try:
-        return decode(
-            token, environ["JWT_SECRET"], ["HS256"], audience="login"
-            )
+        return decode(token, environ["JWT_SECRET"], ["HS256"], audience="login")
     except InvalidTokenError:
         return False

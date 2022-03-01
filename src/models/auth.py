@@ -1,4 +1,3 @@
-from email.policy import default
 from typing import get_args
 
 from apiflask.fields import String, Email
@@ -6,8 +5,8 @@ from apiflask.schemas import Schema
 from apiflask.validators import Length, OneOf
 from mongoengine import Document, StringField, EmailField, BooleanField, EmbeddedDocumentField
 
-from ..utils.types import token_audiences
 from ..models.profiles import ProfileDoc
+from ..utils.types import token_audiences
 
 
 class User(Document):
