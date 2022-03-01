@@ -7,9 +7,6 @@ from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 
-# Get no endpoint para perfil, dentro de la propiedad *arriba
-# Random note over there, just leave it behind
-
 
 @router.get("/profile")
 @output(m.ProfileData, 200)
