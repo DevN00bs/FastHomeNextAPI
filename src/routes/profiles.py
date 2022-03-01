@@ -18,7 +18,7 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
     )
 @auth_required(auth)
 def get_profile():
-    current = c.read_prof(auth.current_user)
+    current = c.read_prof(auth.current_user["id"])
     return current
 
 
