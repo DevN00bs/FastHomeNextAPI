@@ -84,7 +84,8 @@ class BasicPropertyRead(Schema):
     contract = String()
     currency = String()
     owner_username = Function(lambda prop: prop.owner.username)
-    thumbnail_id = Function(lambda prop: str(prop.photo_list.first().photo.thumbnail._id))
+    thumbnail_id = Function(
+        lambda prop: str(prop.photo_list.first().photo.thumbnail._id) if prop.photo_list.first() is not None else None)
 
 
 class NewProperty(Schema):
