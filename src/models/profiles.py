@@ -4,16 +4,16 @@ from apiflask.fields import String, Email
 
 
 class ProfileDoc(m.EmbeddedDocument):
-    phone = m.StringField(default="")
+    phone_number = m.StringField(default="")
     contact_email = m.EmailField()
-    fb_link = m.StringField(default="")
-    insta_link = m.StringField(default="")
-    twit_link = m.StringField(default="")
+    facebook_link = m.StringField(default="")
+    instagram_link = m.StringField(default="")
+    twitter_link = m.StringField(default="")
 
 
 class ProfileData(Schema):
-    phone = String()
+    phone_number = String()
     contact_email = Email()
-    fb_link = String()
-    insta_link = String()
-    twit_link = String()
+    facebook_link = String()
+    instagram_link = String()
+    twitter_link = String()
