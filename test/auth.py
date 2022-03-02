@@ -56,13 +56,15 @@ class AuthTests(TestCase):
         assert tuple_result[0] == ControllerStatus.WRONG_CREDS
 
     def test_successful_registration(self):
-        result = register_user({
+        expected_user = {
             "username": "newuser",
             "email": "new@example.net",
             "password": self._password
-        })
+        }
+        result = register_user(expected_user)
 
-        assert result[0] == ControllerStatus.SUCCESS
+        assert result[0] == ControllerStatus.SUCCESS and User.objects.get(
+            username=expected_user["username"]).email == expected_user["email"]
 
     def test_repeated_username(self):
         result = register_user({
@@ -71,7 +73,7 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS
+        assert result[0] == ControllerStatus.ALREADY_EXISTS and len(User.objects(username=self._username)) == 1
 
     def test_repeated_email(self):
         result = register_user({
@@ -80,4 +82,4 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS
+        assert result[0] == ControllerStatus.ALREADY_EXISTS and len(User.objects(email=self._email)) == 1
