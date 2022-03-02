@@ -13,7 +13,9 @@ from ..utils.types import token_audiences
 def register_user(data) -> tuple[ControllerStatus, str]:
     hashed_passwd = generate_password_hash(data["password"])
     try:
-        new_user = User(username=data["username"], passwd_hash=hashed_passwd, email=data["email"]).save()
+        new_user = User(username=data["username"], passwd_hash=hashed_passwd, email=data["email"])
+        new_user.profile.contact_email = data["email"]
+        new_user.save()
         return ControllerStatus.SUCCESS, str(new_user.id)
     except NotUniqueError:
         return ControllerStatus.ALREADY_EXISTS, ""
