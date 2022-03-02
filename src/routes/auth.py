@@ -75,8 +75,8 @@ def verify_account(token):
 @output({})
 @doc(summary="Send an email to an account",
      description="""Currently, you can only send 2 types of email:
-     'verify' type: Used to verify an account
-     'forgot' type: Used to restore an account's password""",
+- 'verify' type: Used to verify an account
+- 'forgot' type: Used to restore an account's password""",
      responses={
          204: "Email address is valid, but only registered email adresses will be sent a message"
      })
