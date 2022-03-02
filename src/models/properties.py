@@ -1,8 +1,16 @@
+from typing import get_args
+
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Float, Integer, Nested
+from apiflask.fields import String, Float, Integer, Nested, Raw, List, Function, Decimal
+from apiflask.validators import Length, Range, OneOf
 
 from ..models.auth import User, PropertyOwnerInfo
+from ..utils.types import is_valid_id, contract_types
+
+
+class PropertyPhoto(m.EmbeddedDocument):
+    photo = m.ImageField(size=(1280, 720, True), thumbnail_size=(640, 360, True), collection_name="photos")
 
 
 class PropertyDoc(m.Document):
@@ -15,15 +23,14 @@ class PropertyDoc(m.Document):
     bath = m.DecimalField()
     floors = m.IntField()
     garage = m.IntField()
-    photo_list = m.ListField()
+    photo_list = m.EmbeddedDocumentListField(PropertyPhoto, max_length=10)
     contract = m.StringField()
     currency = m.StringField()
     owner = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
     meta = {"collection": "properties"}
 
 
-class PropertyRead(Schema):
-    id = String()
+class PropertyDataResponse(Schema):
     address = String()
     description = String()
     price = Float()
@@ -36,26 +43,16 @@ class PropertyRead(Schema):
     contract = String()
     currency = String()
     owner = Nested(PropertyOwnerInfo, data_key="owner_info")
+    photo_ids = Function(lambda prop: [str(doc.photo.grid_id) for doc in prop.photo_list])
 
 
-class NewProperty(Schema):
-    address = String(required=True)
-    description = String(required=True)
-    price = Float(required=True)
-    terrain_height = Float(required=True)
-    terrain_width = Float(required=True)
-    bed = Integer(required=True)
-    bath = Float(required=True)
-    floors = Integer(required=True)
-    garage = Integer(required=True)
-    contract = String(required=True)
-    currency = String(required=True)
+class PropertyDataRequest(Schema):
+    id = String(required=True, validate=is_valid_id)
 
 
-class PropertyUpdate(Schema):
-    id = String(required=True)
+class BasicPropertyRead(Schema):
+    id = String(data_key="property_id")
     address = String()
-    description = String()
     price = Float()
     terrain_height = Float()
     terrain_width = Float()
@@ -65,7 +62,57 @@ class PropertyUpdate(Schema):
     garage = Integer()
     contract = String()
     currency = String()
+    owner_username = Function(lambda prop: prop.owner.username)
+    thumbnail_id = Function(lambda prop: str(prop.photo_list.first().photo.thumbnail._id))
+
+
+class NewProperty(Schema):
+    address = String(required=True, validate=Length(1, 150))
+    description = String(validate=Length(max=2000))
+    price = Decimal(required=True, places=4, validate=Range(1, 999_999_999.9999))
+    terrain_height = Decimal(required=True, places=2, validate=Range(1, 999.99))
+    terrain_width = Decimal(required=True, places=2, validate=Range(1, 999.99))
+    bed = Integer(strict=True, required=True, validate=Range(1, 99))
+    bath = Decimal(required=True, places=1, validate=Range(1, 99.5))
+    floors = Integer(strict=True, required=True, validate=Range(1, 99))
+    garage = Integer(strict=True, required=True, validate=Range(1, 99))
+    contract = String(required=True, validate=OneOf(get_args(contract_types)))
+    currency = String(required=True, validate=Length(3, 3))
+
+
+class NewPropertyResponse(Schema):
+    id = String()
+
+
+class PropertyUpdate(Schema):
+    id = String(required=True, validate=is_valid_id)
+    address = String(validate=Length(1, 150))
+    description = String(validate=Length(max=2000))
+    price = Decimal(places=4, validate=Range(1, 999_999_999.9999))
+    terrain_height = Decimal(places=2, validate=Range(1, 999.99))
+    terrain_width = Decimal(places=2, validate=Range(1, 999.99))
+    bed = Integer(strict=True, validate=Range(1, 99))
+    bath = Decimal(places=1, validate=Range(1, 99.5))
+    floors = Integer(strict=True, validate=Range(1, 99))
+    garage = Integer(strict=True, validate=Range(1, 99))
+    contract = String(validate=OneOf(get_args(contract_types)))
+    currency = String(validate=Length(3, 3))
 
 
 class PropertyDelete(Schema):
-    id = String(required=True)
+    id = String(required=True, validate=is_valid_id)
+
+
+class UploadPhotosQueryRequest(Schema):
+    id = String(required=True, validate=is_valid_id)
+
+
+class UploadPhotosFilesRequest(Schema):
+    main_photo = Raw(type="string", format="binary", required=True)
+    photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
+
+
+class UploadPhotosRequest(Schema):
+    id = String()
+    main_photo = Raw(type="string", format="binary")
+    photos = List(Raw(type="string", format="binary"), validate=Length(max=9))

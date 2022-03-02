@@ -1,5 +1,4 @@
 from apiflask import APIBlueprint, input, output, abort, doc
-from apiflask.schemas import Schema
 
 import src.controllers.auth as auth
 import src.controllers.mail as mail
@@ -11,8 +10,12 @@ router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth"
 
 @router.post("/register")
 @input(models.RegistrationRequest)
-@output(Schema, 201)
-@doc(responses={409: "A user with that username and/or e-mail is already registered"})
+@output({})
+@doc(summary="Create an account",
+     description="""This endpoint will send a verification email.
+     If the delivery fails, you can use the 'send' endpoint to retry""",
+     responses={204: "User was registered successfully",
+                409: "A user with that username and/or e-mail is already registered"})
 def create_user(data):
     result = auth.register_user(data)
     if result[0] == ControllerStatus.ALREADY_EXISTS:
@@ -32,7 +35,9 @@ def create_user(data):
 @router.post("/login")
 @input(models.LoginRequest)
 @output(models.LoginResponse)
-@doc(responses={401: "Username and/or password combination is incorrect", 403: "Your account hasn't been verified yet"})
+@doc(summary="Log in into your account and get your authentication token",
+     responses={200: "Credentials are correct and we return the user's bearer token",
+                401: "Username and/or password combination is incorrect", 403: "Your account hasn't been verified yet"})
 def log_in_user(data):
     result = auth.log_in(data)
     if result[0] == ControllerStatus.ERROR:
@@ -48,10 +53,10 @@ def log_in_user(data):
 
 
 @router.get("/verify/<token>")
-@output(Schema)
-@doc(responses={
-    200: "Account was verified successfully",
-    410: "Link has expired and/or its invalid",
+@output({})
+@doc(summary="Verify an account using a link from a verification email", responses={
+    204: "Account was verified successfully",
+    410: "Link has expired and/or it's invalid",
     404: "No token was provided"
 })
 def verify_account(token):
@@ -67,10 +72,14 @@ def verify_account(token):
 
 @router.post("/send")
 @input(models.SendEmailRequest)
-@output(Schema)
-@doc(responses={
-    200: "Email address is valid, but only registered email adresses will receive the message"
-})
+@output({})
+@doc(summary="Send an email to an account",
+     description="""Currently, you can only send 2 types of email:
+     'verify' type: Used to verify an account
+     'forgot' type: Used to restore an account's password""",
+     responses={
+         204: "Email address is valid, but only registered email adresses will be sent a message"
+     })
 def send_account_email(data):
     # This should probably not be here
     email_subjects_dict = {
@@ -97,7 +106,11 @@ def send_account_email(data):
 
 @router.post("/forgot")
 @input(models.ForgotPasswordRequest)
-@output({}, 204)
+@output({})
+@doc(summary="Change an account's password using an email link", responses={
+    204: "Password was changed successfully",
+    410: "Link has expired and/or it's invalid",
+})
 def change_password_mail_link(data):
     token_data = auth.decode_mail_token(data["token"], "forgot")
     if token_data[0] == ControllerStatus.INVALID_LINK:
