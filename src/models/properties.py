@@ -27,11 +27,11 @@ class PropertyPhoto(m.EmbeddedDocument):
 
 class PropertyOwnerInfo(FilteredSchema):
     username = String()
-    phone = Function(lambda prop: prop.profile.phone)
+    phone_number = Function(lambda prop: prop.profile.phone_number)
     contact_email = Function(lambda prop: prop.profile.contact_email)
-    fb_link = Function(lambda prop: prop.profile.fb_link)
-    insta_link = Function(lambda prop: prop.profile.insta_link)
-    twit_link = Function(lambda prop: prop.profile.twit_link)
+    facebook_link = Function(lambda prop: prop.profile.facebook_link)
+    instagram_link = Function(lambda prop: prop.profile.instagram_link)
+    twitter_link = Function(lambda prop: prop.profile.twitter_link)
 
 
 class PropertyDoc(m.Document):
@@ -40,13 +40,13 @@ class PropertyDoc(m.Document):
     price = m.DecimalField()
     terrain_height = m.DecimalField()
     terrain_width = m.DecimalField()
-    bed = m.IntField()
-    bath = m.DecimalField()
-    floors = m.IntField()
-    garage = m.IntField()
+    bedrooms_amount = m.IntField()
+    bathrooms_amount = m.DecimalField()
+    floors_amount = m.IntField()
+    garage_size = m.IntField()
     photo_list = m.EmbeddedDocumentListField(PropertyPhoto, max_length=10)
-    contract = m.StringField()
-    currency = m.StringField()
+    contract_type = m.StringField()
+    currency_code = m.StringField()
     owner = m.ReferenceField(User, reverse_delete_rule=m.CASCADE)
     meta = {"collection": "properties"}
 
@@ -57,18 +57,18 @@ class PropertyDataResponse(FilteredSchema):
     price = Float()
     terrain_height = Float()
     terrain_width = Float()
-    bed = Integer()
-    bath = Float()
-    floors = Integer()
-    garage = Integer()
-    contract = String()
-    currency = String()
+    bedrooms_amount = Integer()
+    bathrooms_amount = Float()
+    floors_amount = Integer()
+    garage_size = Integer()
+    contract_type = String()
+    currency_code = String()
     owner = Nested(PropertyOwnerInfo, data_key="owner_info")
     photo_ids = Function(lambda prop: [str(doc.photo.grid_id) for doc in prop.photo_list])
 
 
 class PropertyDataRequest(Schema):
-    id = String(required=True, validate=is_valid_id)
+    id = String(required=True, validate=is_valid_id, data_key="property_id")
 
 
 class BasicPropertyRead(Schema):
@@ -77,12 +77,12 @@ class BasicPropertyRead(Schema):
     price = Float()
     terrain_height = Float()
     terrain_width = Float()
-    bed = Integer()
-    bath = Float()
-    floors = Integer()
-    garage = Integer()
-    contract = String()
-    currency = String()
+    bedrooms_amount = Integer()
+    bathrooms_amount = Float()
+    floors_amount = Integer()
+    garage_size = Integer()
+    contract_type = String()
+    currency_code = String()
     owner_username = Function(lambda prop: prop.owner.username)
     thumbnail_id = Function(
         lambda prop: str(prop.photo_list.first().photo.thumbnail._id) if prop.photo_list.first() is not None else None)
@@ -94,39 +94,39 @@ class NewProperty(Schema):
     price = Decimal(required=True, places=4, validate=Range(1, 999_999_999.9999))
     terrain_height = Decimal(required=True, places=2, validate=Range(1, 999.99))
     terrain_width = Decimal(required=True, places=2, validate=Range(1, 999.99))
-    bed = Integer(strict=True, required=True, validate=Range(1, 99))
-    bath = Decimal(required=True, places=1, validate=Range(1, 99.5))
-    floors = Integer(strict=True, required=True, validate=Range(1, 99))
-    garage = Integer(strict=True, required=True, validate=Range(1, 99))
-    contract = String(required=True, validate=OneOf(get_args(contract_types)))
-    currency = String(required=True, validate=Length(3, 3))
+    bedrooms_amount = Integer(strict=True, required=True, validate=Range(1, 99))
+    bathrooms_amount = Decimal(required=True, places=1, validate=Range(1, 99.5))
+    floors_amount = Integer(strict=True, required=True, validate=Range(1, 99))
+    garage_size = Integer(strict=True, required=True, validate=Range(1, 99))
+    contract_type = String(required=True, validate=OneOf(get_args(contract_types)))
+    currency_code = String(required=True, validate=Length(3, 3))
 
 
 class NewPropertyResponse(Schema):
-    id = String()
+    id = String(data_key="property_id")
 
 
 class PropertyUpdate(Schema):
-    id = String(required=True, validate=is_valid_id)
+    id = String(required=True, validate=is_valid_id, data_key="property_id")
     address = String(validate=Length(1, 150))
     description = String(validate=Length(max=2000))
     price = Decimal(places=4, validate=Range(1, 999_999_999.9999))
     terrain_height = Decimal(places=2, validate=Range(1, 999.99))
     terrain_width = Decimal(places=2, validate=Range(1, 999.99))
-    bed = Integer(strict=True, validate=Range(1, 99))
-    bath = Decimal(places=1, validate=Range(1, 99.5))
-    floors = Integer(strict=True, validate=Range(1, 99))
-    garage = Integer(strict=True, validate=Range(1, 99))
-    contract = String(validate=OneOf(get_args(contract_types)))
-    currency = String(validate=Length(3, 3))
+    bedrooms_amount = Integer(strict=True, validate=Range(1, 99))
+    bathrooms_amount = Decimal(places=1, validate=Range(1, 99.5))
+    floors_amount = Integer(strict=True, validate=Range(1, 99))
+    garage_size = Integer(strict=True, validate=Range(1, 99))
+    contract_type = String(validate=OneOf(get_args(contract_types)))
+    currency_code = String(validate=Length(3, 3))
 
 
 class PropertyDelete(Schema):
-    id = String(required=True, validate=is_valid_id)
+    id = String(required=True, validate=is_valid_id, data_key="property_id")
 
 
 class UploadPhotosQueryRequest(Schema):
-    id = String(required=True, validate=is_valid_id)
+    id = String(required=True, validate=is_valid_id, data_key="property_id")
 
 
 class UploadPhotosFilesRequest(Schema):
@@ -135,6 +135,6 @@ class UploadPhotosFilesRequest(Schema):
 
 
 class UploadPhotosRequest(Schema):
-    id = String()
+    property_id = String()
     main_photo = Raw(type="string", format="binary")
     photos = List(Raw(type="string", format="binary"), validate=Length(max=9))

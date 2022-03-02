@@ -32,7 +32,7 @@ def edit_spec(spec):
     # Remove the "application/json" content type from the documentation
     del spec["paths"]["/api/property/photos"]["post"]["requestBody"]["content"]["application/json"]
     # Then we mark some parameters as required
-    spec["components"]["schemas"]["UploadPhotosRequest"]["required"] = ["id", "main_photo"]
+    spec["components"]["schemas"]["UploadPhotosRequest"]["required"] = ["property_id", "main_photo"]
     return spec
 
 
