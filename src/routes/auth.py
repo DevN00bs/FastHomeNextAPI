@@ -12,7 +12,8 @@ router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth"
 @input(models.RegistrationRequest)
 @output({})
 @doc(summary="Create an account",
-     description="This endpoint will send a verification email. If the delivery fails, you can use the 'send' endpoint to retry",
+     description="""This endpoint will send a verification email.
+     If the delivery fails, you can use the 'send' endpoint to retry""",
      responses={204: "User was registered successfully",
                 409: "A user with that username and/or e-mail is already registered"})
 def create_user(data):
@@ -73,7 +74,9 @@ def verify_account(token):
 @input(models.SendEmailRequest)
 @output({})
 @doc(summary="Send an email to an account",
-     description="Currently, you can only send 2 types of email: 'verify' type: Used to verify an account and 'forgot' type: Used to restore an account's password",
+     description="""Currently, you can only send 2 types of email:
+     'verify' type: Used to verify an account
+     'forgot' type: Used to restore an account's password""",
      responses={
          204: "Email address is valid, but only registered email adresses will be sent a message"
      })

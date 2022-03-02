@@ -15,7 +15,8 @@ router = APIBlueprint("prop", __name__, "Properties", url_prefix="/api")
 @input(m.NewProperty, example=ex.post_property_request_example)
 @output(m.NewPropertyResponse, 201, example=ex.post_property_response_example)
 @doc(summary='Create a new property and returns its ID',
-     description="Note: After calling this route, you need to upload at least 1 image using the 'photos' route, otherwise it won't be considered valid")
+     description="""Note: After calling this route, you need to upload at least 1 image using the 'photos' route,
+     otherwise it won't be considered valid""")
 @auth_required(auth)
 def create_property(data):
     result = c.register_prop(data, auth.current_user["id"])
