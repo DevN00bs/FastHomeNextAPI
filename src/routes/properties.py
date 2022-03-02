@@ -120,11 +120,11 @@ def upload_property_photos(_, data, files):
     return ""
 
 
-@router.get("/property/photo/<id>")
+@router.get("/property/photo/<photo_id>")
 @doc(hide=True)
-def get_photo(id):
-    result = p.get_photo_from_db(id)
+def get_photo(photo_id):
+    result = p.get_photo_from_db(photo_id)
     if result[0] == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
 
-    return send_file(result[1], mimetype=f"image/{result[1].format.lower()}")
+    return send_file(result[1].read(), mimetype=f"image/{result[1].format.lower()}")
