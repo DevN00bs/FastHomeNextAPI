@@ -27,6 +27,11 @@ class PropertyPhoto(m.EmbeddedDocument):
 
 class PropertyOwnerInfo(FilteredSchema):
     username = String()
+    phone = Function(lambda prop: prop.profile.phone)
+    contact_email = Function(lambda prop: prop.profile.contact_email)
+    fb_link = Function(lambda prop: prop.profile.fb_link)
+    insta_link = Function(lambda prop: prop.profile.insta_link)
+    twit_link = Function(lambda prop: prop.profile.twit_link)
 
 
 class PropertyDoc(m.Document):
