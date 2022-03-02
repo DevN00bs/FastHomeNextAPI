@@ -5,7 +5,7 @@ from apiflask.fields import String, Email
 
 class ProfileDoc(m.EmbeddedDocument):
     phone = m.StringField(default="")
-    contact_email = m.EmailField(default="")
+    contact_email = m.EmailField()
     fb_link = m.StringField(default="")
     insta_link = m.StringField(default="")
     twit_link = m.StringField(default="")
