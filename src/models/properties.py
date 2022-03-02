@@ -6,7 +6,7 @@ from apiflask.fields import String, Float, Integer, Nested, Raw, List, Function,
 from apiflask.validators import Length, Range, OneOf
 from marshmallow import post_dump
 
-from ..models.auth import User, PropertyOwnerInfo
+from ..models.auth import User
 from ..utils.types import is_valid_id, contract_types
 
 
@@ -23,6 +23,10 @@ class FilteredSchema(Schema):
 
 class PropertyPhoto(m.EmbeddedDocument):
     photo = m.ImageField(size=(1280, 720, True), thumbnail_size=(640, 360, True), collection_name="photos")
+
+
+class PropertyOwnerInfo(FilteredSchema):
+    username = String()
 
 
 class PropertyDoc(m.Document):
