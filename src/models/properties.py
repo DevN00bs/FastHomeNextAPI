@@ -4,9 +4,21 @@ import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String, Float, Integer, Nested, Raw, List, Function, Decimal
 from apiflask.validators import Length, Range, OneOf
+from marshmallow import post_dump
 
 from ..models.auth import User, PropertyOwnerInfo
 from ..utils.types import is_valid_id, contract_types
+
+
+class FilteredSchema(Schema):
+    VALUES_TO_FILTER = [None, ""]
+
+    @post_dump
+    def remove_none(self, data, **_kwargs):
+        return {
+            key: value for key, value in data.items()
+            if value not in self.VALUES_TO_FILTER
+        }
 
 
 class PropertyPhoto(m.EmbeddedDocument):
@@ -30,7 +42,7 @@ class PropertyDoc(m.Document):
     meta = {"collection": "properties"}
 
 
-class PropertyDataResponse(Schema):
+class PropertyDataResponse(FilteredSchema):
     address = String()
     description = String()
     price = Float()
