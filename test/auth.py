@@ -18,11 +18,13 @@ class AuthTests(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         connect("fast-home-test", host="mongomock://localhost")
-        User(
+        new_user = User(
             username=cls._username,
             email=cls._email,
             passwd_hash=generate_password_hash(cls._password)
-        ).save()
+        )
+        new_user.profile.contact_email = cls._email
+        new_user.save()
 
     @classmethod
     def tearDownClass(cls) -> None:
