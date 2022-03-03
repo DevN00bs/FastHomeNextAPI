@@ -36,8 +36,9 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert tuple_result[0] == ControllerStatus.SUCCESS and str(User.objects(username=self._username).first().id) == \
-               decode(tuple_result[1], environ["JWT_SECRET"], ["HS256"], audience="login")["id"]
+        self.assertEqual(tuple_result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(str(User.objects(username=self._username).first().id),
+                         decode(tuple_result[1], environ["JWT_SECRET"], ["HS256"], audience="login")["id"])
 
     def test_wrong_username(self):
         tuple_result = log_in({
@@ -45,7 +46,7 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
+        self.assertEqual(tuple_result[0], ControllerStatus.WRONG_CREDS)
 
     def test_wrong_password(self):
         tuple_result = log_in({
@@ -53,7 +54,7 @@ class AuthTests(TestCase):
             "password": "wrongpass"
         })
 
-        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
+        self.assertEqual(tuple_result[0], ControllerStatus.WRONG_CREDS)
 
     def test_successful_registration(self):
         expected_user = {
@@ -63,8 +64,8 @@ class AuthTests(TestCase):
         }
         result = register_user(expected_user)
 
-        assert result[0] == ControllerStatus.SUCCESS and User.objects.get(
-            username=expected_user["username"]).email == expected_user["email"]
+        self.assertEqual(result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(User.objects.get(username=expected_user["username"]).email, expected_user["email"])
 
     def test_repeated_username(self):
         result = register_user({
@@ -73,7 +74,8 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS and len(User.objects(username=self._username)) == 1
+        self.assertEqual(result[0], ControllerStatus.ALREADY_EXISTS)
+        self.assertEqual(len(User.objects(username=self._username)), 1)
 
     def test_repeated_email(self):
         result = register_user({
@@ -82,4 +84,5 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS and len(User.objects(email=self._email)) == 1
+        self.assertEqual(result[0], ControllerStatus.ALREADY_EXISTS)
+        self.assertEqual(len(User.objects(email=self._email)), 1)
