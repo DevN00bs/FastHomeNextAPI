@@ -3,18 +3,11 @@ from unittest import TestCase
 from mongoengine import connect, disconnect, DoesNotExist
 from werkzeug.security import generate_password_hash
 
-from src.controllers.properties import register_prop, all_props, update_prop
+from src.controllers.properties import register_prop, all_props, update_prop, delete_prop, get_property_data
 from src.controllers.auth import register_user
 from src.models.properties import PropertyDoc
 from src.models.auth import User
 from src.utils.enums import ControllerStatus
-
-'''
-TODO:
-Get props x full
-Photos (?)
-Delete
-'''
 
 
 class CreatePropertyTests(TestCase):
@@ -176,4 +169,116 @@ class UpdatePropertyTest(TestCase):
         self.assertNotEqual(test_id, self._userId)
         self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).price, _price)
 
-    # Still on delete_prop and get_property_data - uploaded just to have it on git
+
+class DeletePropertyTest(TestCase):
+    _email = "test@example.net"
+    _password = "testpass"
+    _userId = ""
+    _propId = ""
+    _register_user = {
+        "username": "testuser",
+        "passwd_hash": generate_password_hash(_password),
+        "email": _email,
+        "profile": {
+            "contact_email": _email
+        }
+    }
+    _register_prop = {
+        "address": "1234 Test Street",
+        "bathrooms_amount": 1.5,
+        "bedrooms_amount": 3,
+        "contract_type": "rent",
+        "currency_code": "EUR",
+        "floors_amount": 1,
+        "garage_size": 2,
+        "price": 120000,
+        "terrain_height": 5,
+        "terrain_width": 7
+    }
+
+    def setUp(self) -> None:
+        connect("fast-home-test", host="mongomock://localhost")
+        new_user = User(**self._register_user).save()
+        self._userId = str(new_user.id)
+        new_prop = PropertyDoc(**self._register_prop, owner=self._userId).save()
+        self._propId = str(new_prop.id)
+
+    def tearDown(self) -> None:
+        disconnect()
+
+    def test_successful_delete(self):
+        result = delete_prop({
+            "id": self._propId
+        }, self._userId)
+
+        self.assertEqual(result, ControllerStatus.SUCCESS)
+        self.assertRaises(DoesNotExist, lambda: PropertyDoc.objects.get(id=self._propId))
+
+    def test_nonexistent_property(self):
+        test_id = "60999999a651cad33ea0510f"
+        result = delete_prop({
+            "id": test_id
+        }, self._userId)
+
+        self.assertEqual(result, ControllerStatus.DOES_NOT_EXISTS)
+        self.assertRaises(DoesNotExist, lambda: PropertyDoc.objects.get(id=test_id))
+
+    def test_unauthorized_delete(self):
+        test_id = "60999999a651cad33ea0510f"
+        result = delete_prop({
+            "id": self._propId
+        }, test_id)
+
+        self.assertEqual(result, ControllerStatus.UNAUTHORIZED)
+        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).id, self._propId)
+
+
+class GetPropertyDataTest(TestCase):
+    _email = "test@example.net"
+    _password = "testpass"
+    _userId = ""
+    _propId = ""
+    _register_user = {
+        "username": "testuser",
+        "passwd_hash": generate_password_hash(_password),
+        "email": _email,
+        "profile": {
+            "contact_email": _email
+        }
+    }
+    _register_prop = {
+        "address": "1234 Test Street",
+        "bathrooms_amount": 1.5,
+        "bedrooms_amount": 3,
+        "contract_type": "rent",
+        "currency_code": "EUR",
+        "floors_amount": 1,
+        "garage_size": 2,
+        "price": 120000,
+        "terrain_height": 5,
+        "terrain_width": 7
+    }
+
+    def setUp(self) -> None:
+        connect("fast-home-test", host="mongomock://localhost")
+        new_user = User(**self._register_user).save()
+        self._userId = str(new_user.id)
+        new_prop = PropertyDoc(**self._register_prop, owner=self._userId).save()
+        self._propId = str(new_prop.id)
+
+    def tearDown(self) -> None:
+        disconnect()
+
+    def test_successful_specific_property(self):
+        result = get_property_data(self._propId)
+        obj_address = PropertyDoc.objects.get(id=self._propId).address
+
+        self.assertEqual(result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(result[1].address, obj_address)
+
+    def test_property_not_found(self):
+        test_id = "60999999a651cad33ea0510f"
+        result = get_property_data(test_id)
+
+        self.assertEqual(result, (ControllerStatus.DOES_NOT_EXISTS, None))
+        self.assertRaises(DoesNotExist, lambda: PropertyDoc.objects.get(id=test_id))
