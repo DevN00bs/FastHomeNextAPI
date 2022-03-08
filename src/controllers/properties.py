@@ -8,9 +8,6 @@ from ..utils.enums import ControllerStatus
 
 
 def register_prop(data, user_id) -> tuple[ControllerStatus, str]:
-    if str(usr.User.objects.get().id) != user_id:
-        return ControllerStatus.DOES_NOT_EXISTS, ""
-
     try:
         new_prop = m.PropertyDoc(
             **data,

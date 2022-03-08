@@ -86,10 +86,9 @@ class GetAllPropertiesTest(TestCase):
 
     def test_get_properties(self):
         result = all_props()
-        obj = PropertyDoc.objects.get()
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
-        self.assertEqual(result[1].get(), obj)
+        self.assertEqual(result[1].first().address, self._register_prop["address"])
 
 
 class UpdatePropertyTest(TestCase):
@@ -113,7 +112,7 @@ class UpdatePropertyTest(TestCase):
         "currency_code": "EUR",
         "floors_amount": 1,
         "garage_size": 2,
-        "price": 120000,
+        "price": 120000.11,
         "terrain_height": 5,
         "terrain_width": 7
     }
@@ -138,8 +137,7 @@ class UpdatePropertyTest(TestCase):
         }, self._userId)
 
         self.assertEqual(result, ControllerStatus.SUCCESS)
-        # I'm not that sure about this last line, still passes
-        self.assertEqual(PropertyDoc.objects.get(owner=self._userId).price, _price)
+        self.assertEqual(PropertyDoc.objects.get(id=self._propId).price, _price)
 
     def test_nonexistent_update(self):
         _price = 12
@@ -165,9 +163,8 @@ class UpdatePropertyTest(TestCase):
         }, test_id)
 
         self.assertEqual(result, ControllerStatus.UNAUTHORIZED)
-        # Lack of ideas in next line xD, idk how to make it into the db
-        self.assertNotEqual(test_id, self._userId)
-        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).price, _price)
+        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).owner, test_id)
+        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).price, self._register_prop["price"])
 
 
 class DeletePropertyTest(TestCase):
