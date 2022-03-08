@@ -4,9 +4,8 @@ from mongoengine import connect, disconnect, DoesNotExist
 from werkzeug.security import generate_password_hash
 
 from src.controllers.properties import register_prop, all_props, update_prop, delete_prop, get_property_data
-from src.controllers.auth import register_user
-from src.models.properties import PropertyDoc
 from src.models.auth import User
+from src.models.properties import PropertyDoc
 from src.utils.enums import ControllerStatus
 
 

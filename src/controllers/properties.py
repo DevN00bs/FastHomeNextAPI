@@ -3,7 +3,6 @@ from typing import Optional
 from mongoengine.errors import OperationError, DoesNotExist
 
 import src.models.properties as m
-import src.models.auth as usr
 from ..utils.enums import ControllerStatus
 
 
