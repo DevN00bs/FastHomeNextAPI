@@ -221,12 +221,13 @@ class DeletePropertyTest(TestCase):
 
     def test_unauthorized_delete(self):
         test_id = "60999999a651cad33ea0510f"
+        prop_doc = PropertyDoc.objects.get(id=self._propId)
         result = delete_prop({
             "id": self._propId
         }, test_id)
 
         self.assertEqual(result, ControllerStatus.UNAUTHORIZED)
-        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).owner, test_id)
+        self.assertNotEqual(str(prop_doc["owner"].id), test_id)
 
 
 class GetPropertyDataTest(TestCase):
