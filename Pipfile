@@ -9,6 +9,7 @@ mongoengine = "~=0.23.1"
 dnspython = "~=2.2.0"
 pyjwt = "~=2.3.0"
 pillow = "~=9.0.1"
+flask-cors = "~=3.0.10"
 
 [dev-packages]
 python-dotenv = "~=0.19.2"
