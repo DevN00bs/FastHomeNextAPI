@@ -226,7 +226,7 @@ class DeletePropertyTest(TestCase):
         }, test_id)
 
         self.assertEqual(result, ControllerStatus.UNAUTHORIZED)
-        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).id, self._propId)
+        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).owner, test_id)
 
 
 class GetPropertyDataTest(TestCase):
