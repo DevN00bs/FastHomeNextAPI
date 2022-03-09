@@ -127,4 +127,4 @@ def get_photo(photo_id):
     if result[0] == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
 
-    return send_file(result[1].read(), mimetype=f"image/{result[1].format.lower()}")
+    return send_file(result[1], mimetype=f"image/{result[1].format.lower()}")
