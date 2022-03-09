@@ -142,6 +142,7 @@ class UploadPhotosRequest(Schema):
 
 class PropertyFilterRequest(Schema):
     bedrooms_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
-    bathrooms_amount = String(validate=Regexp(r"^[1-9]\d*(\.5)?\+?$"))
+    bathrooms_amount = String(validate=Regexp(r"^[1-9]\d*(\.5)?\+?$"),
+                              metadata={"description": ".5 represents half bathrooms"})
     floors_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
     garage_size = String(validate=Regexp(r"^[1-9]\d*\+?$"))
