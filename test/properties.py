@@ -162,7 +162,7 @@ class UpdatePropertyTest(TestCase):
         }, test_id)
 
         self.assertEqual(result, ControllerStatus.UNAUTHORIZED)
-        self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).owner, test_id)
+        self.assertNotEqual(str(PropertyDoc.objects.get(id=self._propId).owner), test_id)
         self.assertNotEqual(PropertyDoc.objects.get(id=self._propId).price, self._register_prop["price"])
 
 
