@@ -268,7 +268,6 @@ class GetPropertyDataTest(TestCase):
 
     def test_successful_specific_property(self):
         result = get_property_data(self._propId)
-        obj_address = PropertyDoc.objects.get(id=self._propId).address
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(result[1].address, self._register_prop["address"])
