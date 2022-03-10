@@ -271,7 +271,7 @@ class GetPropertyDataTest(TestCase):
         obj_address = PropertyDoc.objects.get(id=self._propId).address
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
-        self.assertEqual(result[1].address, obj_address)
+        self.assertEqual(result[1].address, self._register_prop["address"])
 
     def test_property_not_found(self):
         test_id = "60999999a651cad33ea0510f"
