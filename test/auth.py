@@ -10,34 +10,34 @@ from src.models.auth import User
 from src.utils.enums import ControllerStatus
 
 
-class AuthTests(TestCase):
-    _username = "testuser"
+class LoginTests(TestCase):
     _password = "testpass"
     _email = "test@example.net"
+    _new_user = {
+        "username": "testuser",
+        "passwd_hash": generate_password_hash(_password),
+        "email": _email,
+        "profile": {
+            "contact_email": _email
+        }
+    }
 
-    @classmethod
-    def setUpClass(cls) -> None:
+    def setUp(self) -> None:
         connect("fast-home-test", host="mongomock://localhost")
-        new_user = User(
-            username=cls._username,
-            email=cls._email,
-            passwd_hash=generate_password_hash(cls._password)
-        )
-        new_user.profile.contact_email = cls._email
-        new_user.save()
+        User(**self._new_user).save()
 
-    @classmethod
-    def tearDownClass(cls) -> None:
+    def tearDown(self) -> None:
         disconnect()
 
     def test_successful_login(self):
         tuple_result = log_in({
-            "username": self._username,
+            "username": self._new_user["username"],
             "password": self._password
         })
 
-        assert tuple_result[0] == ControllerStatus.SUCCESS and str(User.objects(username=self._username).first().id) == \
-               decode(tuple_result[1], environ["JWT_SECRET"], ["HS256"], audience="login")["id"]
+        self.assertEqual(tuple_result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(str(User.objects(username=self._new_user["username"]).first().id),
+                         decode(tuple_result[1], environ["JWT_SECRET"], ["HS256"], audience="login")["id"])
 
     def test_wrong_username(self):
         tuple_result = log_in({
@@ -45,39 +45,54 @@ class AuthTests(TestCase):
             "password": self._password
         })
 
-        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
+        self.assertEqual(tuple_result[0], ControllerStatus.WRONG_CREDS)
 
     def test_wrong_password(self):
         tuple_result = log_in({
-            "username": self._username,
+            "username": self._new_user["username"],
             "password": "wrongpass"
         })
 
-        assert tuple_result[0] == ControllerStatus.WRONG_CREDS
+        self.assertEqual(tuple_result[0], ControllerStatus.WRONG_CREDS)
+
+
+class RegisterTests(TestCase):
+    _new_user = {
+        "username": "newuser",
+        "email": "new@example.net",
+        "password": "testpass"
+    }
+
+    def setUp(self) -> None:
+        connect("fast-home-test", host="mongomock://localhost")
+
+    def tearDown(self) -> None:
+        disconnect()
 
     def test_successful_registration(self):
-        result = register_user({
-            "username": "newuser",
-            "email": "new@example.net",
-            "password": self._password
-        })
+        result = register_user(self._new_user)
 
-        assert result[0] == ControllerStatus.SUCCESS
+        self.assertEqual(result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(User.objects.get(username=self._new_user["username"]).email, self._new_user["email"])
 
     def test_repeated_username(self):
+        User(username=self._new_user["username"], passwd_hash=generate_password_hash(self._new_user["password"]),
+             email=self._new_user["email"]).save()
         result = register_user({
-            "username": self._username,
-            "email": "new@example.net",
-            "password": self._password
+            **self._new_user,
+            "email": "otheraddress@example.net"
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS
+        self.assertEqual(result[0], ControllerStatus.ALREADY_EXISTS)
+        self.assertEqual(len(User.objects(username=self._new_user["username"])), 1)
 
     def test_repeated_email(self):
+        User(username=self._new_user["username"], passwd_hash=generate_password_hash(self._new_user["password"]),
+             email=self._new_user["email"]).save()
         result = register_user({
-            "username": "newuser",
-            "email": self._email,
-            "password": self._password
+            **self._new_user,
+            "username": "notthesame"
         })
 
-        assert result[0] == ControllerStatus.ALREADY_EXISTS
+        self.assertEqual(result[0], ControllerStatus.ALREADY_EXISTS)
+        self.assertEqual(len(User.objects(email=self._new_user["email"])), 1)
