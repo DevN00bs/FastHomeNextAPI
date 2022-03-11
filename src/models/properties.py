@@ -3,7 +3,7 @@ from typing import get_args
 import mongoengine as m
 from apiflask import Schema
 from apiflask.fields import String, Float, Integer, Nested, Raw, List, Function, Decimal
-from apiflask.validators import Length, Range, OneOf
+from apiflask.validators import Length, Range, OneOf, Regexp
 from marshmallow import post_dump
 
 from ..models.auth import User
@@ -138,3 +138,11 @@ class UploadPhotosRequest(Schema):
     property_id = String()
     main_photo = Raw(type="string", format="binary")
     photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
+
+
+class PropertyFilterRequest(Schema):
+    bedrooms_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
+    bathrooms_amount = String(validate=Regexp(r"^[1-9]\d*(\.5)?\+?$"),
+                              metadata={"description": ".5 represents half bathrooms"})
+    floors_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
+    garage_size = String(validate=Regexp(r"^[1-9]\d*\+?$"))
