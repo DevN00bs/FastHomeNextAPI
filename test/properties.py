@@ -90,6 +90,7 @@ class GetAllPropertiesTest(TestCase):
         self.assertEqual(result[1].first().address, self._register_prop["address"])
 
     def test_filtered_property_list(self):
+        filter_object = {"bedrooms_amount": "10"}
         extra_property_address = "748 Italien Avenue"
         PropertyDoc(**{
             "address": extra_property_address,
@@ -105,11 +106,12 @@ class GetAllPropertiesTest(TestCase):
             "owner": self._id
         }).save()
 
-        result = all_props({"bedrooms_amount": "10"})
+        result = all_props(filter_object)
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(len(result[1]), 1)
         self.assertEqual(result[1].first().address, extra_property_address)
+        self.assertEqual(len(PropertyDoc.objects(**filter_object)), 1)
 
 
 class UpdatePropertyTest(TestCase):
