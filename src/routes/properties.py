@@ -27,10 +27,12 @@ def create_property(data):
 
 
 @router.get("/properties")
+@input(m.PropertyFilterRequest, location="query")
 @output(m.BasicPropertyRead(many=True), example=ex.get_properties_response_example)
-@doc(summary='Get a list of properties')
-def read_property():
-    result = c.all_props()
+@doc(summary='Get a list of properties', description="Filters are optional. To make 'or more' queries add a '+' "
+                                                     "symbol next to the number.")
+def read_property(filters):
+    result = c.all_props(filters)
     if result[0] == ControllerStatus.ERROR:
         abort(500)
     return result[1]

@@ -77,17 +77,41 @@ class GetAllPropertiesTest(TestCase):
     def setUp(self) -> None:
         connect("fast-home-test", host="mongomock://localhost")
         new_user = User(**self._register_user).save()
-        PropertyDoc(**self._register_prop).save()
+        PropertyDoc(**self._register_prop, owner=new_user.id).save()
         self._id = str(new_user.id)
 
     def tearDown(self) -> None:
         disconnect()
 
     def test_get_properties(self):
-        result = all_props()
+        result = all_props({})
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(result[1].first().address, self._register_prop["address"])
+
+    def test_filtered_property_list(self):
+        filter_object = {"bedrooms_amount": "10"}
+        extra_property_address = "748 Italien Avenue"
+        PropertyDoc(**{
+            "address": extra_property_address,
+            "bathrooms_amount": 7,
+            "bedrooms_amount": 10,
+            "contract_type": "sell",
+            "currency_code": "MXN",
+            "floors_amount": 2,
+            "garage_size": 7,
+            "price": 85000000,
+            "terrain_height": 47,
+            "terrain_width": 50,
+            "owner": self._id
+        }).save()
+
+        result = all_props(filter_object)
+
+        self.assertEqual(result[0], ControllerStatus.SUCCESS)
+        self.assertEqual(len(result[1]), 1)
+        self.assertEqual(result[1].first().address, extra_property_address)
+        self.assertEqual(len(PropertyDoc.objects(**filter_object)), 1)
 
 
 class UpdatePropertyTest(TestCase):

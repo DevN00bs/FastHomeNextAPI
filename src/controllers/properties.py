@@ -17,9 +17,12 @@ def register_prop(data, user_id) -> tuple[ControllerStatus, str]:
         return ControllerStatus.ERROR, ""
 
 
-def all_props() -> tuple[ControllerStatus, list[m.PropertyDoc]]:
+def all_props(filters: dict[str, str]) -> tuple[ControllerStatus, list[m.PropertyDoc]]:
     try:
-        return ControllerStatus.SUCCESS, m.PropertyDoc.objects
+        return ControllerStatus.SUCCESS, m.PropertyDoc.objects(**{
+            f"{field}{'__gte' if value.endswith('+') else ''}": float(value.rstrip("+")) for field, value in
+            filters.items()
+        })
     except OperationError:
         return ControllerStatus.ERROR, list()
 
