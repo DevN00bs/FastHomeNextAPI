@@ -110,7 +110,7 @@ class GetAllPropertiesTest(TestCase):
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(len(result[1]), 1)
         self.assertEqual(result[1].first().address, extra_property_address)
-
+        
 
 class UpdatePropertyTest(TestCase):
     _email = "test@example.net"
