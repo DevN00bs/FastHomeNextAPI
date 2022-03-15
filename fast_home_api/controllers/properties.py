@@ -2,7 +2,7 @@ from typing import Optional
 
 from mongoengine.errors import OperationError, DoesNotExist
 
-import src.models.properties as m
+import fast_home_api.models.properties as m
 from ..utils.enums import ControllerStatus
 
 

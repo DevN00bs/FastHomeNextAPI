@@ -1,6 +1,6 @@
 from mongoengine.errors import OperationError, DoesNotExist
 
-import src.models.auth as prof
+import fast_home_api.models.auth as prof
 from ..utils.enums import ControllerStatus
 
 

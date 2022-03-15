@@ -5,9 +5,9 @@ from jwt import decode
 from mongoengine import connect, disconnect
 from werkzeug.security import generate_password_hash
 
-from src.controllers.auth import log_in, register_user
-from src.models.auth import User
-from src.utils.enums import ControllerStatus
+from fast_home_api.controllers.auth import log_in, register_user
+from fast_home_api.models.auth import User
+from fast_home_api.utils.enums import ControllerStatus
 
 
 class LoginTests(TestCase):
