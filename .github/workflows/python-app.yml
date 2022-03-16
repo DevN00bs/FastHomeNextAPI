@@ -18,8 +18,8 @@ jobs:
         run: |
           pipx install pipenv
           if [ ! -f Pipfile.lock ]; then pipenv lock; fi
-      - name: Set up packages
       - uses: actions/setup-python@v2
+      - name: Set up packages
         with:
           python-version: "3.10"
           cache: "pipenv"
