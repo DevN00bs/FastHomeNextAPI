@@ -31,11 +31,10 @@ jobs:
           pip install pipenv
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
-        env:
-          PIPENV_VENV_IN_PROJECT: 1
         run: |
           if [ ! -f Pipfile.lock ]; then pipenv lock; fi
-          pipenv install --dev --verbose
+          pipenv lock -r --dev > requirements.txt
+          pip install -r requirements.txt
       - name: Lint with flake8
         run: flake8 fast_home_api --max-line-length=127 --exclude 'templates'
       - name: Test with unittest
