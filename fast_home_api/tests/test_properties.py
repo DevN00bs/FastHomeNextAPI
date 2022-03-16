@@ -3,10 +3,10 @@ from unittest import TestCase
 from mongoengine import connect, disconnect, DoesNotExist
 from werkzeug.security import generate_password_hash
 
-from src.controllers.properties import register_prop, all_props, update_prop, delete_prop, get_property_data
-from src.models.auth import User
-from src.models.properties import PropertyDoc
-from src.utils.enums import ControllerStatus
+from fast_home_api.controllers.properties import register_prop, all_props, update_prop, delete_prop, get_property_data
+from fast_home_api.models.auth import User
+from fast_home_api.models.properties import PropertyDoc
+from fast_home_api.utils.enums import ControllerStatus
 
 
 class CreatePropertyTests(TestCase):

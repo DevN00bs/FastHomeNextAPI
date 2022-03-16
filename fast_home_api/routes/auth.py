@@ -1,8 +1,8 @@
 from apiflask import APIBlueprint, input, output, abort, doc
 
-import src.controllers.auth as auth
-import src.controllers.mail as mail
-import src.models.auth as models
+import fast_home_api.controllers.auth as auth
+import fast_home_api.controllers.mail as mail
+import fast_home_api.models.auth as models
 from ..utils.enums import ControllerStatus
 
 router = APIBlueprint("auth", __name__, "Authentication", url_prefix="/api/auth")

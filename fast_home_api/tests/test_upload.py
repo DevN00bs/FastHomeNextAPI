@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from werkzeug.datastructures import FileStorage, Headers
 
-import src.controllers.upload as upl
-from src.utils.enums import ControllerStatus
+import fast_home_api.controllers.upload as upl
+from fast_home_api.utils.enums import ControllerStatus
 
 
 class CheckFileTypeTests(TestCase):
@@ -12,9 +12,9 @@ class CheckFileTypeTests(TestCase):
     _non_image: FileStorage
 
     def setUp(self) -> None:
-        self._image = FileStorage(open(join(dirname(__file__), "../src/templates/img/logo.png"), "rb"),
+        self._image = FileStorage(open(join(dirname(__file__), "../templates/img/logo.png"), "rb"),
                                   headers=Headers({"Content-Type": "image/png"}))
-        self._non_image = FileStorage(open(join(dirname(__file__), "../src/templates/verify.html")),
+        self._non_image = FileStorage(open(join(dirname(__file__), "../templates/verify.html")),
                                       headers=Headers({"Content-Type": "text/html"}))
 
     def tearDown(self) -> None:

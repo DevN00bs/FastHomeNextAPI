@@ -1,7 +1,7 @@
 from apiflask import APIBlueprint, abort, auth_required, doc, input, output
 
-import src.controllers.profiles as c
-import src.models.profiles as m
+import fast_home_api.controllers.profiles as c
+import fast_home_api.models.profiles as m
 from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
 

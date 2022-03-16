@@ -1,10 +1,10 @@
 from apiflask import APIBlueprint, input, output, abort, doc, auth_required
 from flask import send_file
 
-import src.controllers.properties as c
-import src.controllers.upload as p
-import src.models.properties as m
-import src.utils.examples as ex
+import fast_home_api.controllers.properties as c
+import fast_home_api.controllers.upload as p
+import fast_home_api.models.properties as m
+import fast_home_api.utils.examples as ex
 from ..utils.auth import auth
 from ..utils.enums import ControllerStatus
 
