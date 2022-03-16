@@ -17,9 +17,12 @@ def register_prop(data, user_id) -> tuple[ControllerStatus, str]:
         return ControllerStatus.ERROR, ""
 
 
-def all_props(filters: dict[str, str]) -> tuple[ControllerStatus, list[m.PropertyDoc]]:
+def all_props(options: dict[str, str], filters: dict[str, str]) -> tuple[ControllerStatus, list[m.PropertyDoc]]:
+    display = int(options["per_page"])
+    starting_point = (int(options["page_number"]) - 1) * display
+    finish_point = starting_point + display
     try:
-        return ControllerStatus.SUCCESS, m.PropertyDoc.objects(**{
+        return ControllerStatus.SUCCESS, m.PropertyDoc.objects[starting_point: finish_point](**{
             f"{field}{'__gte' if value.endswith('+') else ''}": float(value.rstrip("+")) for field, value in
             filters.items()
         })
