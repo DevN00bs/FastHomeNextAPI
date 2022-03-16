@@ -1,4 +1,4 @@
-# This workflow will install Python eedependencies, un tests and lint with a single version of Python
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Python application
@@ -18,12 +18,13 @@ jobs:
         run: |
           pipx install pipenv
           if [ ! -f Pipfile.lock ]; then pipenv lock; fi
-      - name: Set up packages
-      - uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
         with:
           python-version: "3.10"
           cache: "pipenv"
-      - run: pipenv install -d
+      - name: Install dependencies
+        run: pipenv install -d
       - name: Lint with flake8
         run: pipenv run linter
       - name: Test with unittest
