@@ -1,1 +1,1 @@
-web: gunicorn src.server:app
+web: gunicorn fast_home_api.main:app
