@@ -3,9 +3,9 @@ from unittest import TestCase
 from mongoengine import connect, disconnect, DoesNotExist
 from werkzeug.security import generate_password_hash
 
-import src.controllers.profiles as profile
-from src.models.auth import User
-from src.utils.enums import ControllerStatus
+import fast_home_api.controllers.profiles as profile
+from fast_home_api.models.auth import User
+from fast_home_api.utils.enums import ControllerStatus
 
 
 class ReadProfileTests(TestCase):
