@@ -18,11 +18,12 @@ jobs:
         run: |
           pipx install pipenv
           if [ ! -f Pipfile.lock ]; then pipenv lock; fi
-      - name: Set up packages
+      - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.10"
           cache: "pipenv"
+      - name: Install dependencies
         run: pipenv install -d
       - name: Lint with flake8
         run: pipenv run linter
