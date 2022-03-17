@@ -8,12 +8,13 @@ from flask_socketio import SocketIO
 from .routes.auth import router as auth
 from .routes.profiles import router as prof
 from .routes.properties import router as prop
+from .routes.chat import ChatNamespace
 
 app = APIFlask(__name__,
                title="FastHome API",
                version="0.1.0.alpha")
 CORS(app)
-socket = SocketIO(app)
+socket = SocketIO(app, cors_allowed_origins="*")
 connect(
     host=environ["DB_HOST"],
     username=environ["DB_USER"],
@@ -43,3 +44,5 @@ def edit_spec(spec):
 app.register_blueprint(auth)
 app.register_blueprint(prop)
 app.register_blueprint(prof)
+
+socket.on_namespace(ChatNamespace("/chat"))
