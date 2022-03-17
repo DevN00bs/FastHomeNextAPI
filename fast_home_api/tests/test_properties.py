@@ -88,17 +88,17 @@ class GetAllPropertiesTest(TestCase):
             "page_number": "1",
             "per_page": "1"
         }
-        result = all_props(pagination_object, {})
+        result = all_props(pagination_object)
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(result[1].first().address, self._register_prop["address"])
 
     def test_filtered_property_list(self):
-        pagination_object = {
+        options_object = {
+            "bedrooms_amount": "10",
             "page_number": "1",
             "per_page": "1"
         }
-        filter_object = {"bedrooms_amount": "10"}
         extra_property_address = "748 Italien Avenue"
         PropertyDoc(**{
             "address": extra_property_address,
@@ -114,12 +114,12 @@ class GetAllPropertiesTest(TestCase):
             "owner": self._id
         }).save()
 
-        result = all_props(pagination_object, filter_object)
+        result = all_props(options_object)
 
         self.assertEqual(result[0], ControllerStatus.SUCCESS)
         self.assertEqual(len(result[1]), 1)
         self.assertEqual(result[1].first().address, extra_property_address)
-        self.assertEqual(len(PropertyDoc.objects(**filter_object)), 1)
+        self.assertEqual(len(PropertyDoc.objects(**options_object["bedrooms_amount"])), 1)
 
 
 class UpdatePropertyTest(TestCase):
