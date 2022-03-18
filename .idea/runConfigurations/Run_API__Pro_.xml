@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run API" type="Python.FlaskServer">
+  <configuration default="false" name="Run API (Pro)" type="Python.FlaskServer">
     <option name="additionalOptions" value="--reload" />
     <option name="application" value="app" />
     <module name="FastHomeNextAPI" />

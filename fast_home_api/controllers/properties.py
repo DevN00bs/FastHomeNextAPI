@@ -17,11 +17,14 @@ def register_prop(data, user_id) -> tuple[ControllerStatus, str]:
         return ControllerStatus.ERROR, ""
 
 
-def all_props(filters: dict[str, str]) -> tuple[ControllerStatus, list[m.PropertyDoc]]:
+def all_props(options: dict[str, any]) -> tuple[ControllerStatus, list[m.PropertyDoc]]:
+    per_page = options["per_page"]
+    starting_point = (options["page_number"] - 1) * per_page
+    finish_point = starting_point + per_page
     try:
-        return ControllerStatus.SUCCESS, m.PropertyDoc.objects(**{
+        return ControllerStatus.SUCCESS, m.PropertyDoc.objects[starting_point: finish_point](**{
             f"{field}{'__gte' if value.endswith('+') else ''}": float(value.rstrip("+")) for field, value in
-            filters.items()
+            {field: value for field, value in options.items() if type(value) == str}.items()
         })
     except OperationError:
         return ControllerStatus.ERROR, list()

@@ -140,9 +140,11 @@ class UploadPhotosRequest(Schema):
     photos = List(Raw(type="string", format="binary"), validate=Length(max=9))
 
 
-class PropertyFilterRequest(Schema):
+class PropertyOptionsRequest(Schema):
     bedrooms_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
     bathrooms_amount = String(validate=Regexp(r"^[1-9]\d*(\.5)?\+?$"),
                               metadata={"description": ".5 represents half bathrooms"})
     floors_amount = String(validate=Regexp(r"^[1-9]\d*\+?$"))
     garage_size = String(validate=Regexp(r"^[1-9]\d*\+?$"))
+    page_number = Integer(required=True, validate=Range(1, 999))
+    per_page = Integer(required=True, validate=Range(1, 99))
