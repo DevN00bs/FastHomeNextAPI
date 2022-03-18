@@ -1,4 +1,4 @@
-from flask_socketio import Namespace, emit
+from flask_socketio import Namespace
 
 
 class ChatNamespace(Namespace):
