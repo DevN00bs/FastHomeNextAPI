@@ -1,3 +1,4 @@
+from flask import request
 from flask_socketio import Namespace, ConnectionRefusedError
 
 import fast_home_api.controllers.chat as c
@@ -14,3 +15,5 @@ class ChatNamespace(Namespace):
 
         if valid_data[0] == ControllerStatus.UNAUTHORIZED:
             raise ConnectionRefusedError("Invalid credentials")
+
+        c.add_user_to_session(valid_data[1]["decoded_token"]["id"], request.sid)
