@@ -24,7 +24,7 @@ def all_props(options: dict[str, any]) -> tuple[ControllerStatus, list[m.Propert
     try:
         return ControllerStatus.SUCCESS, m.PropertyDoc.objects[starting_point: finish_point](**{
             f"{field}{'__gte' if value.endswith('+') else ''}": float(value.rstrip("+")) for field, value in
-            options.items()
+            {field: value for field, value in options.items() if type(value) == str}.items()
         })
     except OperationError:
         return ControllerStatus.ERROR, list()
