@@ -30,3 +30,11 @@ def validate_schema(schema: Type[Schema], data: dict[str, Any]) -> tuple[Control
 
 def add_user_to_session(user_id: str, session_id: str) -> None:
     id_session_dict[user_id] = session_id
+
+
+def check_user_availability(to_user_id: str) -> tuple[ControllerStatus, str]:
+    user_sid = id_session_dict[to_user_id]
+    if user_sid is None:
+        return ControllerStatus.NOT_AVAILABLE, ""
+
+    return ControllerStatus.SUCCESS, user_sid
