@@ -1,3 +1,5 @@
+from time import time
+
 from flask import request
 from flask_socketio import Namespace, ConnectionRefusedError, emit
 
@@ -20,8 +22,8 @@ class ChatNamespace(Namespace):
 
     @staticmethod
     def on_send_message(data):
-        valid_data = c.authenticate_and_validate(m.ChatMessageRequest, data)
-        print(valid_data)
+        data_with_date = {**data, "date": int(round(time() * 1000))}
+        valid_data = c.authenticate_and_validate(m.ChatMessageRequest, data_with_date)
         if valid_data[0] == ControllerStatus.ERROR:
             raise ConnectionRefusedError("Invalid request")
 
