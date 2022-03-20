@@ -1,9 +1,11 @@
 from typing import Any, Type
 
 from marshmallow import Schema, ValidationError
+from mongoengine.errors import DoesNotExist
 
+from ..models.auth import User
 from ..utils.auth import verify_token
-from ..utils.enums import ControllerStatus
+from ..utils.enums import ControllerStatus, ChatEventType
 
 id_session_dict = {}
 
@@ -39,3 +41,14 @@ def check_user_availability(to_user_id: str) -> tuple[ControllerStatus, str]:
         return ControllerStatus.NOT_AVAILABLE, ""
 
     return ControllerStatus.SUCCESS, user_sid
+
+
+def save_to_event_queue(user_id: str, content: str, date: int) -> ControllerStatus:
+    try:
+        user_doc = User.objects.get(id=user_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
+
+    user_doc.events_queue.create(event_type=ChatEventType.MESSAGE, content=content, date=date)
+    user_doc.save()
+    return ControllerStatus.SUCCESS
