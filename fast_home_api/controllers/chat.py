@@ -62,3 +62,8 @@ def get_event_queue(user_id: str) -> tuple[ControllerStatus, list[dict[str, Any]
         return ControllerStatus.DOES_NOT_EXISTS, []
 
     return ControllerStatus.SUCCESS, ChatEventResponse().dump(user_doc.events_queue, many=True)
+
+
+def destroy_user_session(sid: str) -> ControllerStatus:
+    del id_session_dict[list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]]
+    return ControllerStatus.SUCCESS

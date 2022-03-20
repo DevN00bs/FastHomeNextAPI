@@ -45,3 +45,7 @@ class ChatNamespace(Namespace):
         emit("receive_message", {"message": valid_data[1]["message"], "from": valid_data[1]["decoded_token"]["id"],
                                  "date": valid_data[1]["date"]}, to=user_status[1])
         return {"status": "received"}
+
+    @staticmethod
+    def on_disconnect():
+        c.destroy_user_session(request.sid)
