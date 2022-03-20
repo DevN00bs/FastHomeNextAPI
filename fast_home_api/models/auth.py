@@ -3,8 +3,10 @@ from typing import get_args
 from apiflask.fields import String, Email
 from apiflask.schemas import Schema
 from apiflask.validators import Length, OneOf
-from mongoengine import Document, StringField, EmailField, BooleanField, EmbeddedDocumentField
+from mongoengine import Document, StringField, EmailField, BooleanField, EmbeddedDocumentField, \
+    EmbeddedDocumentListField
 
+from ..models.chat import ChatEvent
 from ..models.profiles import ProfileDoc
 from ..utils.types import token_audiences
 
@@ -16,6 +18,7 @@ class User(Document):
     is_verified = BooleanField(default=True)
     last_token = StringField()
     profile = EmbeddedDocumentField(ProfileDoc, default=ProfileDoc())
+    events_queue = EmbeddedDocumentListField(ChatEvent)
     meta = {"collection": "users"}
 
 
