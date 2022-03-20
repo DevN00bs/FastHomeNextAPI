@@ -20,6 +20,10 @@ class ChatNamespace(Namespace):
 
         c.add_user_to_session(valid_data[1]["decoded_token"]["id"], request.sid)
 
+        queue_result = c.get_event_queue(valid_data[1]["decoded_token"]["id"])
+        if queue_result[0] == ControllerStatus.SUCCESS:
+            return queue_result[1]
+
     @staticmethod
     def on_send_message(data):
         data_with_date = {**data, "date": int(round(time() * 1000))}

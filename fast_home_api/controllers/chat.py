@@ -4,6 +4,7 @@ from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
 
 from ..models.auth import User
+from ..models.chat import ChatEventResponse
 from ..utils.auth import verify_token
 from ..utils.enums import ControllerStatus, ChatEventType
 
@@ -52,3 +53,12 @@ def save_to_event_queue(user_id: str, content: str, date: int) -> ControllerStat
     user_doc.events_queue.create(event_type=ChatEventType.MESSAGE, content=content, date=date)
     user_doc.save()
     return ControllerStatus.SUCCESS
+
+
+def get_event_queue(user_id: str) -> tuple[ControllerStatus, list[dict[str, Any]]]:
+    try:
+        user_doc = User.objects.get(id=user_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, []
+
+    return ControllerStatus.SUCCESS, ChatEventResponse().dump(user_doc.events_queue, many=True)
