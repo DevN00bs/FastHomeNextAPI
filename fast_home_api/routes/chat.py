@@ -41,11 +41,13 @@ class ChatNamespace(Namespace):
             if queue_result == ControllerStatus.DOES_NOT_EXISTS:
                 raise ConnectionRefusedError("User not found")
 
-            return {"status": "sent"}
+            return {"content": "sent"}
 
-        emit("receive_message", {"message": valid_data[1]["message"], "from": valid_data[1]["decoded_token"]["id"],
-                                 "date": valid_data[1]["date"]}, to=user_status[1])
-        return {"status": "received"}
+        emit("receive_events",
+             [{"event_type": ChatEventType(0).name, "content": valid_data[1]["message"],
+               "from_id": valid_data[1]["decoded_token"]["id"],
+               "date": valid_data[1]["date"]}], to=user_status[1])
+        return {"content": "received"}
 
     @staticmethod
     def on_queue_consumed(data):
@@ -61,7 +63,7 @@ class ChatNamespace(Namespace):
             raise ConnectionRefusedError("User not found")
 
         for sid, events in result[1].items():
-            emit("receive_message", events, to=sid)
+            emit("receive_events", events, to=sid)
 
     @staticmethod
     def on_disconnect():
