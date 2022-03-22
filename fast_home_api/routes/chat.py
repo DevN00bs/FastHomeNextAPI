@@ -48,5 +48,18 @@ class ChatNamespace(Namespace):
         return {"status": "received"}
 
     @staticmethod
+    def on_queue_consumed(data):
+        user_data = c.authenticate_and_validate(m.ChatEnterRequest, data)
+        if user_data[0] == ControllerStatus.ERROR:
+            raise ConnectionRefusedError("Invalid request")
+
+        if user_data[0] == ControllerStatus.UNAUTHORIZED:
+            raise ConnectionRefusedError("Invalid credentials")
+
+        result = c.destroy_event_queue(user_data[1]["decoded_token"]["id"])
+        if result == ControllerStatus.DOES_NOT_EXISTS:
+            raise ConnectionRefusedError("User not found")
+
+    @staticmethod
     def on_disconnect():
         c.destroy_user_session(request.sid)

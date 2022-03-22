@@ -64,6 +64,17 @@ def get_event_queue(user_id: str) -> tuple[ControllerStatus, list[dict[str, Any]
     return ControllerStatus.SUCCESS, ChatEventResponse().dump(user_doc.events_queue, many=True)
 
 
+def destroy_event_queue(user_id: str) -> ControllerStatus:
+    try:
+        user_object = User.objects.get(id=user_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
+
+    user_object.events_queue.delete()
+    user_object.save()
+    return ControllerStatus.SUCCESS
+
+
 def destroy_user_session(sid: str) -> ControllerStatus:
     del id_session_dict[list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]]
     return ControllerStatus.SUCCESS
