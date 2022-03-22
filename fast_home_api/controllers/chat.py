@@ -4,7 +4,7 @@ from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
 
 from ..models.auth import User
-from ..models.chat import ChatEventResponse
+from ..models.chat import ChatEventResponse, ChatEvent
 from ..utils.auth import verify_token
 from ..utils.enums import ControllerStatus, ChatEventType
 
@@ -65,15 +65,33 @@ def get_event_queue(user_id: str) -> tuple[ControllerStatus, list[dict[str, Any]
     return ControllerStatus.SUCCESS, ChatEventResponse().dump(user_doc.events_queue, many=True)
 
 
-def destroy_event_queue(user_id: str) -> ControllerStatus:
+def destroy_event_queue(user_id: str) -> tuple[ControllerStatus, dict[str, list[dict[str, Any]]]]:
     try:
         user_object = User.objects.get(id=user_id)
     except DoesNotExist:
-        return ControllerStatus.DOES_NOT_EXISTS
+        return ControllerStatus.DOES_NOT_EXISTS, {}
+
+    connected_users_events = {}
+    for uid, events in create_received_events(user_id, user_object.events_queue).items():
+        availability = check_user_availability(uid)
+        if availability[0] == ControllerStatus.NOT_AVAILABLE:
+            u_obj = User.objects.get(id=uid)
+            for event in events:
+                u_obj.events_queue.create(**event)
+            u_obj.save()
+        else:
+            connected_users_events[availability[1]] = events
 
     user_object.events_queue.delete()
     user_object.save()
-    return ControllerStatus.SUCCESS
+    return ControllerStatus.SUCCESS, connected_users_events
+
+
+def create_received_events(user_id: str, event_list: list[ChatEvent]) -> dict[str, list[dict[str, Any]]]:
+    return {event.from_id: [{"event_type": ChatEventType.STATUS_CHANGE, "content": "received", "date": in_event.date,
+                             "from_id": user_id} for in_event in event_list if
+                            in_event.from_id == event.from_id] for event in event_list if
+            event.event_type == ChatEventType.MESSAGE}
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:

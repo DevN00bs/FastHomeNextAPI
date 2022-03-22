@@ -57,8 +57,11 @@ class ChatNamespace(Namespace):
             raise ConnectionRefusedError("Invalid credentials")
 
         result = c.destroy_event_queue(user_data[1]["decoded_token"]["id"])
-        if result == ControllerStatus.DOES_NOT_EXISTS:
+        if result[0] == ControllerStatus.DOES_NOT_EXISTS:
             raise ConnectionRefusedError("User not found")
+
+        for sid, events in result[1].items():
+            emit("receive_message", events, to=sid)
 
     @staticmethod
     def on_disconnect():
