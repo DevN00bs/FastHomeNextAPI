@@ -4,7 +4,8 @@ from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
 
 from ..models.auth import User
-from ..models.chat import ChatEventResponse, ChatEvent
+from ..models.chat import ChatEventResponse, ChatEvent, StartConversationResponse
+from ..models.properties import PropertyDoc
 from ..utils.auth import verify_token
 from ..utils.enums import ControllerStatus, ChatEventType
 
@@ -92,6 +93,15 @@ def create_received_events(user_id: str, event_list: list[ChatEvent]) -> dict[st
                              "from_id": user_id} for in_event in event_list if
                             in_event.from_id == event.from_id] for event in event_list if
             event.event_type == ChatEventType.MESSAGE}
+
+
+def get_property_owner(prop_id: str) -> tuple[ControllerStatus, dict[str, str]]:
+    try:
+        prop_result = PropertyDoc.objects.get(id=prop_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, {}
+
+    return ControllerStatus.SUCCESS, StartConversationResponse().dump(prop_result)
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:

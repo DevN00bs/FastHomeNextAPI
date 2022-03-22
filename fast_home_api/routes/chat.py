@@ -44,7 +44,7 @@ class ChatNamespace(Namespace):
             return {"content": "sent", "date": valid_data[1]["date"]}
 
         emit("receive_events",
-             [{"event_type": ChatEventType(0).name, "content": valid_data[1]["message"],
+             [{"event_type": ChatEventType.MESSAGE.name, "content": valid_data[1]["message"],
                "from_id": valid_data[1]["decoded_token"]["id"],
                "date": valid_data[1]["date"]}], to=user_status[1])
         return {"content": "received", "date": valid_data[1]["date"]}
@@ -64,6 +64,18 @@ class ChatNamespace(Namespace):
 
         for sid, events in result[1].items():
             emit("receive_events", events, to=sid)
+
+    @staticmethod
+    def on_start_conversation(data):
+        result = c.validate_schema(m.StartConversationRequest, data)
+        if result[0] == ControllerStatus.ERROR:
+            raise ConnectionRefusedError("Invalid request")
+
+        owner_id = c.get_property_owner(result[1]["property_id"])
+        if owner_id[0] == ControllerStatus.DOES_NOT_EXISTS:
+            raise ConnectionRefusedError("Property not found")
+
+        return owner_id[1]
 
     @staticmethod
     def on_disconnect():

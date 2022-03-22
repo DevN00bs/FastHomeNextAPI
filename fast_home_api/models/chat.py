@@ -1,8 +1,8 @@
 from marshmallow import Schema
-from marshmallow.fields import String, Integer
+from marshmallow.fields import String, Integer, Function
+from marshmallow_enum import EnumField as Enum
 from mongoengine import EmbeddedDocument
 from mongoengine.fields import StringField, EnumField, IntField
-from marshmallow_enum import EnumField as Enum
 
 from ..utils.enums import ChatEventType
 
@@ -31,3 +31,14 @@ class ChatEventResponse(Schema):
     content = String()
     description = String()
     date = Integer()
+
+
+class StartConversationRequest(Schema):
+    property_id = String(required=True)
+
+
+class StartConversationResponse(Schema):
+    thumbnail_id = Function(
+        lambda prop: str(prop.photo_list.first().photo.thumbnail._id) if prop.photo_list.first() is not None else None)
+    address = String()
+    user_id = Function(lambda prop: str(prop.owner.id))
