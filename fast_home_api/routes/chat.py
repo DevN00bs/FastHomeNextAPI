@@ -37,7 +37,7 @@ class ChatNamespace(Namespace):
         user_status = c.check_user_availability(data["to_user_id"])
         if user_status[0] == ControllerStatus.NOT_AVAILABLE:
             queue_result = c.save_to_event_queue(data["to_user_id"], ChatEventType.MESSAGE, valid_data[1]["message"],
-                                                 valid_data[1]["date"])
+                                                 valid_data[1]["date"], valid_data[1]["decoded_token"]["id"])
             if queue_result == ControllerStatus.DOES_NOT_EXISTS:
                 raise ConnectionRefusedError("User not found")
 

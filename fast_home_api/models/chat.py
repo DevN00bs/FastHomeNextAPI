@@ -12,6 +12,7 @@ class ChatEvent(EmbeddedDocument):
     content = StringField(required=True)
     description = StringField()
     date = IntField(required=True)
+    from_id = StringField(required=True)
 
 
 class ChatEnterRequest(Schema):
