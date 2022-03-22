@@ -44,13 +44,13 @@ def check_user_availability(to_user_id: str) -> tuple[ControllerStatus, str]:
     return ControllerStatus.SUCCESS, user_sid
 
 
-def save_to_event_queue(user_id: str, content: str, date: int) -> ControllerStatus:
+def save_to_event_queue(user_id: str, event_type: ChatEventType, content: str, date: int) -> ControllerStatus:
     try:
         user_doc = User.objects.get(id=user_id)
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS
 
-    user_doc.events_queue.create(event_type=ChatEventType.MESSAGE, content=content, date=date)
+    user_doc.events_queue.create(event_type=event_type, content=content, date=date)
     user_doc.save()
     return ControllerStatus.SUCCESS
 
