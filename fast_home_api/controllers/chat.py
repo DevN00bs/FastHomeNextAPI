@@ -80,7 +80,7 @@ def destroy_event_queue(user_id: str) -> tuple[ControllerStatus, dict[str, list[
                 u_obj.events_queue.create(**event)
             u_obj.save()
         else:
-            connected_users_events[availability[1]] = events
+            connected_users_events[availability[1]] = ChatEventResponse().dump(events, many=True)
 
     user_object.events_queue.delete()
     user_object.save()
