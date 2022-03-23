@@ -37,7 +37,8 @@ class ChatNamespace(Namespace):
         user_status = c.check_user_availability(data["to_user_id"])
         if user_status[0] == ControllerStatus.NOT_AVAILABLE:
             queue_result = c.save_to_event_queue(data["to_user_id"], ChatEventType.MESSAGE, valid_data[1]["message"],
-                                                 valid_data[1]["date"], valid_data[1]["decoded_token"]["id"])
+                                                 valid_data[1]["date"], valid_data[1]["decoded_token"]["id"],
+                                                 valid_data[1]["property_id"])
             if queue_result == ControllerStatus.DOES_NOT_EXISTS:
                 raise ConnectionRefusedError("User not found")
 
@@ -46,7 +47,8 @@ class ChatNamespace(Namespace):
         emit("receive_events",
              [{"event_type": ChatEventType.MESSAGE.name, "content": valid_data[1]["message"],
                "from_id": valid_data[1]["decoded_token"]["id"],
-               "date": valid_data[1]["date"]}], to=user_status[1])
+               "date": valid_data[1]["date"], "property_id": valid_data[1]["property_id"],
+               "is_owner": c.check_if_is_owner(user_status[1], valid_data[1]["property_id"])[1]}], to=user_status[1])
         return {"content": "received", "date": valid_data[1]["date"]}
 
     @staticmethod

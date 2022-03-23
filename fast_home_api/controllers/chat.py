@@ -45,14 +45,26 @@ def check_user_availability(to_user_id: str) -> tuple[ControllerStatus, str]:
     return ControllerStatus.SUCCESS, user_sid
 
 
+def check_if_is_owner(user_id: str, property_id: str) -> tuple[ControllerStatus, bool]:
+    try:
+        is_owner = str(PropertyDoc.objects.get(id=property_id).owner.id) == user_id
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, False
+
+    return ControllerStatus.SUCCESS, is_owner
+
+
 def save_to_event_queue(user_id: str, event_type: ChatEventType, content: str, date: int,
-                        from_id: str) -> ControllerStatus:
+                        from_id: str, property_id: str) -> ControllerStatus:
+    is_owner = check_if_is_owner(user_id, property_id)
+
     try:
         user_doc = User.objects.get(id=user_id)
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS
 
-    user_doc.events_queue.create(event_type=event_type, content=content, date=date, from_id=from_id)
+    user_doc.events_queue.create(event_type=event_type, content=content, date=date, from_id=from_id,
+                                 property_id=property_id, is_owner=is_owner)
     user_doc.save()
     return ControllerStatus.SUCCESS
 

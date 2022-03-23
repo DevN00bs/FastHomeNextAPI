@@ -1,8 +1,8 @@
 from marshmallow import Schema
-from marshmallow.fields import String, Integer, Function
+from marshmallow.fields import String, Integer, Function, Boolean
 from marshmallow_enum import EnumField as Enum
 from mongoengine import EmbeddedDocument
-from mongoengine.fields import StringField, EnumField, IntField
+from mongoengine.fields import StringField, EnumField, IntField, BooleanField
 
 from ..utils.enums import ChatEventType
 
@@ -13,6 +13,8 @@ class ChatEvent(EmbeddedDocument):
     description = StringField()
     date = IntField(required=True)
     from_id = StringField(required=True)
+    property_id = StringField(required=True)
+    is_owner = BooleanField(required=True)
 
 
 class ChatEnterRequest(Schema):
@@ -24,6 +26,7 @@ class ChatMessageRequest(Schema):
     message = String(required=True)
     to_user_id = String(required=True)
     date = Integer()
+    property_id = String(required=True)
 
 
 class ChatEventResponse(Schema):
