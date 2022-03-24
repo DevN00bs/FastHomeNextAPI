@@ -1,6 +1,20 @@
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Email
+from apiflask.fields import String, Email, Float, Integer, Nested
+
+
+class PropsInfo(Schema):
+    address = String()
+    description = String()
+    price = Float()
+    terrain_height = Float()
+    terrain_width = Float()
+    bedrooms_amount = Integer()
+    bathrooms_amount = Float()
+    floors_amount = Integer()
+    garage_size = Integer()
+    contract_type = String()
+    currency_code = String()
 
 
 class ProfileDoc(m.EmbeddedDocument):
@@ -17,3 +31,4 @@ class ProfileData(Schema):
     facebook_link = String()
     instagram_link = String()
     twitter_link = String()
+    properties_list = Nested(PropsInfo, data_key="pub_props", many=True)
