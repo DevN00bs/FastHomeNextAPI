@@ -1,7 +1,6 @@
 from mongoengine.errors import OperationError, DoesNotExist
 
 import fast_home_api.models.properties as prop
-import fast_home_api.models.profiles as user
 import fast_home_api.models.auth as prof
 from ..utils.enums import ControllerStatus
 
