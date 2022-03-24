@@ -1,6 +1,6 @@
 import mongoengine as m
 from apiflask import Schema
-from apiflask.fields import String, Email, Float, Integer, Nested
+from apiflask.fields import String, Email, Float, Integer, Nested, Function
 
 
 class PropsInfo(Schema):
@@ -15,6 +15,8 @@ class PropsInfo(Schema):
     garage_size = Integer()
     contract_type = String()
     currency_code = String()
+    thumbnail_id = Function(
+        lambda prop: str(prop.photo_list.first().photo.thumbnail._id) if prop.photo_list.first() is not None else None)
 
 
 class ProfileDoc(m.EmbeddedDocument):
