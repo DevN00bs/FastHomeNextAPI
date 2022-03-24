@@ -102,7 +102,7 @@ def destroy_event_queue(user_id: str) -> tuple[ControllerStatus, dict[str, list[
 
 def create_received_events(user_id: str, event_list: list[ChatEvent]) -> dict[str, list[dict[str, Any]]]:
     return {event.from_id: [{"event_type": ChatEventType.STATUS_CHANGE, "content": "received", "date": in_event.date,
-                             "from_id": user_id} for in_event in event_list if
+                             "from_id": user_id, "property_id": in_event.property_id} for in_event in event_list if
                             in_event.from_id == event.from_id] for event in event_list if
             event.event_type == ChatEventType.MESSAGE}
 

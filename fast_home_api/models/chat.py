@@ -34,6 +34,8 @@ class ChatEventResponse(Schema):
     content = String()
     description = String()
     date = Integer()
+    from_id = String()
+    property_id = String()
 
 
 class StartConversationRequest(Schema):
