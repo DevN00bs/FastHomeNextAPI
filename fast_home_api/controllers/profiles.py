@@ -15,7 +15,7 @@ def read_prof(user_id) -> ControllerStatus:
     except OperationError:
         return ControllerStatus.ERROR
 
-    return prof_id
+    return {**prof_id.to_mongo().to_dict(), "properties_list": props}
 
 
 def update_prof(data, user_id) -> ControllerStatus:
