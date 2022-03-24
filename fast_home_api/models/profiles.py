@@ -4,6 +4,7 @@ from apiflask.fields import String, Email, Float, Integer, Nested, Function
 
 
 class PropsInfo(Schema):
+    id = String(data_key="property_id")
     address = String()
     description = String()
     price = Float()
