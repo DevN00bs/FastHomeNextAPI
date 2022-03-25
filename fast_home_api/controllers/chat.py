@@ -56,15 +56,13 @@ def check_if_is_owner(user_id: str, property_id: str) -> tuple[ControllerStatus,
 
 def save_to_event_queue(user_id: str, event_type: ChatEventType, content: str, date: int,
                         from_id: str, property_id: str) -> ControllerStatus:
-    is_owner = check_if_is_owner(user_id, property_id)
-
     try:
         user_doc = User.objects.get(id=user_id)
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS
 
     user_doc.events_queue.create(event_type=event_type, content=content, date=date, from_id=from_id,
-                                 property_id=property_id, is_owner=is_owner)
+                                 property_id=property_id)
     user_doc.save()
     return ControllerStatus.SUCCESS
 
