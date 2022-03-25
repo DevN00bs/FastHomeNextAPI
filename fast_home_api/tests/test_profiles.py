@@ -35,14 +35,15 @@ class ReadProfileTests(TestCase):
     def test_successful_get_profile_data(self):
         result = profile.read_prof(self._id)
 
-        self.assertDictEqual(result.to_mongo().to_dict(), self._user_object["profile"])
+        self.assertEqual(result[0], ControllerStatus.SUCCESS)
+        self.assertDictEqual(result[1], {**self._user_object["profile"], "properties_list": []})
         self.assertDictEqual(self._user_object["profile"], User.objects.get(id=self._id).profile.to_mongo().to_dict())
 
     def test_user_not_found(self):
         testing_id = "621ff445fffa26ca23ba651b"
         result = profile.read_prof(testing_id)
 
-        self.assertEqual(result, ControllerStatus.DOES_NOT_EXISTS)
+        self.assertEqual(result[0], ControllerStatus.DOES_NOT_EXISTS)
         self.assertRaises(DoesNotExist, lambda: User.objects.get(id=testing_id))
 
 
