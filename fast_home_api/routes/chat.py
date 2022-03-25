@@ -78,6 +78,13 @@ class ChatNamespace(Namespace):
         if owner_id[0] == ControllerStatus.DOES_NOT_EXISTS:
             raise ConnectionRefusedError("Property not found")
 
+        if "issuer_id" in result[1]:
+            issuer_data = c.get_issuer_data(result[1]["issuer_id"])
+            if issuer_data[0] == ControllerStatus.DOES_NOT_EXISTS:
+                raise ConnectionRefusedError("User not found")
+
+            return owner_id[1] | {"user_id": result[1]["issuer_id"]} | m.IssuerDataResponse().dump(issuer_data[1])
+
         return owner_id[1]
 
     @staticmethod

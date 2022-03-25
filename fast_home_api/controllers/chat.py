@@ -4,7 +4,7 @@ from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
 
 from ..models.auth import User
-from ..models.chat import ChatEventResponse, ChatEvent, StartConversationResponse
+from ..models.chat import ChatEventResponse, ChatEvent, StartConversationResponse, IssuerDataResponse
 from ..models.properties import PropertyDoc
 from ..utils.auth import verify_token
 from ..utils.enums import ControllerStatus, ChatEventType
@@ -43,15 +43,6 @@ def check_user_availability(to_user_id: str) -> tuple[ControllerStatus, str]:
         return ControllerStatus.NOT_AVAILABLE, ""
 
     return ControllerStatus.SUCCESS, user_sid
-
-
-def check_if_is_owner(user_id: str, property_id: str) -> tuple[ControllerStatus, bool]:
-    try:
-        is_owner = str(PropertyDoc.objects.get(id=property_id).owner.id) == user_id
-    except DoesNotExist:
-        return ControllerStatus.DOES_NOT_EXISTS, False
-
-    return ControllerStatus.SUCCESS, is_owner
 
 
 def save_to_event_queue(user_id: str, event_type: ChatEventType, content: str, date: int,
@@ -111,11 +102,17 @@ def get_property_owner(prop_id: str, user_id: str) -> tuple[ControllerStatus, di
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS, {}
 
-    owner_result = check_if_is_owner(user_id, prop_id)
-    if owner_result[0] == ControllerStatus.DOES_NOT_EXISTS:
+    return ControllerStatus.SUCCESS, {**StartConversationResponse().dump(prop_result),
+                                      "is_owner": str(prop_result.owner.id) == user_id}
+
+
+def get_issuer_data(issuer_id: str) -> tuple[ControllerStatus, dict[str, str]]:
+    try:
+        issuer_data = User.objects.get(id=issuer_id)
+    except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS, {}
 
-    return ControllerStatus.SUCCESS, {**StartConversationResponse().dump(prop_result), "is_owner": owner_result[1]}
+    return ControllerStatus.SUCCESS, IssuerDataResponse().dump(issuer_data)
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:

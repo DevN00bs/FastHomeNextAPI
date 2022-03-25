@@ -40,6 +40,7 @@ class ChatEventResponse(Schema):
 class StartConversationRequest(Schema):
     property_id = String(required=True)
     token = String(required=True)
+    issuer_id = String()
 
 
 class StartConversationResponse(Schema):
@@ -47,3 +48,8 @@ class StartConversationResponse(Schema):
         lambda prop: str(prop.photo_list.first().photo.thumbnail._id) if prop.photo_list.first() is not None else None)
     address = String()
     user_id = Function(lambda prop: str(prop.owner.id))
+    username = Function(lambda prop: prop.owner.username)
+
+
+class IssuerDataResponse(Schema):
+    username = String()
