@@ -39,6 +39,7 @@ class ChatEventResponse(Schema):
 
 class StartConversationRequest(Schema):
     property_id = String(required=True)
+    token = String(required=True)
 
 
 class StartConversationResponse(Schema):

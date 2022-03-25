@@ -105,13 +105,17 @@ def create_received_events(user_id: str, event_list: list[ChatEvent]) -> dict[st
             event.event_type == ChatEventType.MESSAGE}
 
 
-def get_property_owner(prop_id: str) -> tuple[ControllerStatus, dict[str, str]]:
+def get_property_owner(prop_id: str, user_id: str) -> tuple[ControllerStatus, dict[str, Any]]:
     try:
         prop_result = PropertyDoc.objects.get(id=prop_id)
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS, {}
 
-    return ControllerStatus.SUCCESS, StartConversationResponse().dump(prop_result)
+    owner_result = check_if_is_owner(user_id, prop_id)
+    if owner_result[0] == ControllerStatus.DOES_NOT_EXISTS:
+        return ControllerStatus.DOES_NOT_EXISTS, {}
+
+    return ControllerStatus.SUCCESS, {**StartConversationResponse().dump(prop_result), "is_owner": owner_result[1]}
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:

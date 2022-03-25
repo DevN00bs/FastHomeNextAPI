@@ -68,11 +68,13 @@ class ChatNamespace(Namespace):
 
     @staticmethod
     def on_start_conversation(data):
-        result = c.validate_schema(m.StartConversationRequest, data)
+        result = c.authenticate_and_validate(m.StartConversationRequest, data)
         if result[0] == ControllerStatus.ERROR:
             raise ConnectionRefusedError("Invalid request")
+        if result[0] == ControllerStatus.UNAUTHORIZED:
+            raise ConnectionRefusedError("Invalid credentials")
 
-        owner_id = c.get_property_owner(result[1]["property_id"])
+        owner_id = c.get_property_owner(result[1]["property_id"], result[1]["decoded_token"]["id"])
         if owner_id[0] == ControllerStatus.DOES_NOT_EXISTS:
             raise ConnectionRefusedError("Property not found")
 
