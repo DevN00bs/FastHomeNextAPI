@@ -107,12 +107,8 @@ class ChatNamespace(Namespace):
         prop_data = c.get_property_owner(result[1]["property_id"], result[1]["decoded_token"]["id"])
         if prop_data[0] == ControllerStatus.DOES_NOT_EXISTS:
             raise ConnectionRefusedError("Property not found")
-        last_seen = c.get_last_seen(prop_data[1]["user_id"])
-        if last_seen[0] == ControllerStatus.DOES_NOT_EXISTS:
-            raise ConnectionRefusedError("User not found")
 
-        return {"is_online": c.check_user_availability(prop_data[1]["user_id"])[0] == ControllerStatus.SUCCESS,
-                "last_seen": last_seen[1]}
+        return {"is_online": prop_data[1]["is_online"], "last_seen": prop_data[1]["last_seen"]}
 
     @staticmethod
     def on_disconnect():

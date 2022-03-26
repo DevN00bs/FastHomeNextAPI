@@ -49,6 +49,7 @@ class StartConversationResponse(Schema):
     address = String()
     user_id = Function(lambda prop: str(prop.owner.id))
     username = Function(lambda prop: prop.owner.username)
+    last_seen = Function(lambda prop: prop.owner.last_seen)
 
 
 class IssuerDataResponse(Schema):

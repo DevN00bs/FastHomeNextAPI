@@ -1,5 +1,5 @@
 from time import time
-from typing import Any, Type, Optional
+from typing import Any, Type
 
 from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
@@ -103,8 +103,12 @@ def get_property_owner(prop_id: str, user_id: str) -> tuple[ControllerStatus, di
     except DoesNotExist:
         return ControllerStatus.DOES_NOT_EXISTS, {}
 
+    is_owner = str(prop_result.owner.id) == user_id
     return ControllerStatus.SUCCESS, {**StartConversationResponse().dump(prop_result),
-                                      "is_owner": str(prop_result.owner.id) == user_id}
+                                      "is_online": check_user_availability(
+                                          user_id if is_owner else str(prop_result.owner.id))[
+                                                       0] == ControllerStatus.SUCCESS,
+                                      "is_owner": is_owner}
 
 
 def get_issuer_data(issuer_id: str) -> tuple[ControllerStatus, dict[str, str]]:
