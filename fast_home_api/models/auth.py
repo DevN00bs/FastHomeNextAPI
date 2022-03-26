@@ -4,7 +4,7 @@ from apiflask.fields import String, Email
 from apiflask.schemas import Schema
 from apiflask.validators import Length, OneOf
 from mongoengine import Document, StringField, EmailField, BooleanField, EmbeddedDocumentField, \
-    EmbeddedDocumentListField
+    EmbeddedDocumentListField, IntField
 
 from ..models.chat import ChatEvent
 from ..models.profiles import ProfileDoc
@@ -17,6 +17,7 @@ class User(Document):
     passwd_hash = StringField()
     is_verified = BooleanField(default=True)
     last_token = StringField()
+    last_seen = IntField()
     profile = EmbeddedDocumentField(ProfileDoc, default=ProfileDoc())
     events_queue = EmbeddedDocumentListField(ChatEvent)
     meta = {"collection": "users"}

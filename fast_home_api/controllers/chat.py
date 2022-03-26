@@ -1,4 +1,5 @@
 from typing import Any, Type
+from time import time
 
 from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
@@ -116,5 +117,18 @@ def get_issuer_data(issuer_id: str) -> tuple[ControllerStatus, dict[str, str]]:
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:
-    del id_session_dict[list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]]
+    try:
+        user_id = list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]
+    except KeyError:
+        return ControllerStatus.NOT_AVAILABLE
+
+    del id_session_dict[user_id]
+
+    try:
+        user_object = User.objects.get(id=user_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS
+
+    user_object.last_seen = int(round(time() * 1000))
+    user_object.save()
     return ControllerStatus.SUCCESS
