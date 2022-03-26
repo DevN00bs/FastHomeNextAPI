@@ -1,7 +1,7 @@
 from time import time
 
 from flask import request
-from flask_socketio import Namespace, ConnectionRefusedError, emit
+from flask_socketio import Namespace, ConnectionRefusedError, emit, join_room
 
 import fast_home_api.controllers.chat as c
 import fast_home_api.models.chat as m
@@ -86,6 +86,33 @@ class ChatNamespace(Namespace):
             return owner_id[1] | {"user_id": result[1]["issuer_id"]} | m.IssuerDataResponse().dump(issuer_data[1])
 
         return owner_id[1]
+
+    @staticmethod
+    def on_enter_conversation(data):
+        result = c.authenticate_and_validate(m.StartConversationRequest, data)
+        if result[0] == ControllerStatus.ERROR:
+            raise ConnectionRefusedError("Invalid request")
+        if result[0] == ControllerStatus.UNAUTHORIZED:
+            raise ConnectionRefusedError("Invalid credentials")
+
+        join_room(result[1]["property_id"])
+        if "issuer_id" in result[1]:
+            issuer_sid = c.check_user_availability(result[1]["issuer_id"])
+            last_seen = c.get_last_seen(result[1]["issuer_id"])
+            if last_seen[0] == ControllerStatus.DOES_NOT_EXISTS:
+                raise ConnectionRefusedError("User not found")
+
+            return {"is_online": issuer_sid[0] == ControllerStatus.SUCCESS, "last_seen": last_seen[1]}
+
+        prop_data = c.get_property_owner(result[1]["property_id"], result[1]["decoded_token"]["id"])
+        if prop_data[0] == ControllerStatus.DOES_NOT_EXISTS:
+            raise ConnectionRefusedError("Property not found")
+        last_seen = c.get_last_seen(prop_data[1]["user_id"])
+        if last_seen[0] == ControllerStatus.DOES_NOT_EXISTS:
+            raise ConnectionRefusedError("User not found")
+
+        return {"is_online": c.check_user_availability(prop_data[1]["user_id"])[0] == ControllerStatus.SUCCESS,
+                "last_seen": last_seen[1]}
 
     @staticmethod
     def on_disconnect():

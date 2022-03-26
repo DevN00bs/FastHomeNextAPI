@@ -1,5 +1,5 @@
-from typing import Any, Type
 from time import time
+from typing import Any, Type, Optional
 
 from marshmallow import Schema, ValidationError
 from mongoengine.errors import DoesNotExist
@@ -114,6 +114,15 @@ def get_issuer_data(issuer_id: str) -> tuple[ControllerStatus, dict[str, str]]:
         return ControllerStatus.DOES_NOT_EXISTS, {}
 
     return ControllerStatus.SUCCESS, IssuerDataResponse().dump(issuer_data)
+
+
+def get_last_seen(user_id: str) -> tuple[ControllerStatus, int]:
+    try:
+        user_data = User.objects.get(id=user_id)
+    except DoesNotExist:
+        return ControllerStatus.DOES_NOT_EXISTS, 0
+
+    return ControllerStatus.SUCCESS, user_data.last_seen
 
 
 def destroy_user_session(sid: str) -> ControllerStatus:
