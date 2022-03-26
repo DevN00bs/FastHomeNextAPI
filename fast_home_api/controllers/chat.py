@@ -129,12 +129,14 @@ def get_last_seen(user_id: str) -> tuple[ControllerStatus, int]:
     return ControllerStatus.SUCCESS, user_data.last_seen
 
 
-def destroy_user_session(sid: str) -> ControllerStatus:
+def get_id_by_session(sid: str) -> tuple[ControllerStatus, str]:
     try:
-        user_id = list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]
-    except KeyError:
-        return ControllerStatus.NOT_AVAILABLE
+        return ControllerStatus.SUCCESS, list(id_session_dict.keys())[list(id_session_dict.values()).index(sid)]
+    except ValueError:
+        return ControllerStatus.NOT_AVAILABLE, ""
 
+
+def destroy_user_session(user_id: str) -> ControllerStatus:
     del id_session_dict[user_id]
 
     try:

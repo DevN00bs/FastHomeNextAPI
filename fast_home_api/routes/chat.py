@@ -19,6 +19,8 @@ class ChatNamespace(Namespace):
             raise ConnectionRefusedError("Invalid credentials")
 
         c.add_user_to_session(valid_data[1]["decoded_token"]["id"], request.sid)
+        emit("user_status_change", {"user_id": valid_data[1]["decoded_token"]["id"], "is_online": True},
+             to=valid_data[1]["decoded_token"]["id"], include_self=False)
 
         queue_result = c.get_event_queue(valid_data[1]["decoded_token"]["id"])
         if queue_result[0] == ControllerStatus.SUCCESS:
@@ -95,21 +97,27 @@ class ChatNamespace(Namespace):
         if result[0] == ControllerStatus.UNAUTHORIZED:
             raise ConnectionRefusedError("Invalid credentials")
 
-        join_room(result[1]["property_id"])
         if "issuer_id" in result[1]:
             issuer_sid = c.check_user_availability(result[1]["issuer_id"])
             last_seen = c.get_last_seen(result[1]["issuer_id"])
             if last_seen[0] == ControllerStatus.DOES_NOT_EXISTS:
                 raise ConnectionRefusedError("User not found")
 
+            join_room(result[1]["issuer_id"])
             return {"is_online": issuer_sid[0] == ControllerStatus.SUCCESS, "last_seen": last_seen[1]}
 
         prop_data = c.get_property_owner(result[1]["property_id"], result[1]["decoded_token"]["id"])
         if prop_data[0] == ControllerStatus.DOES_NOT_EXISTS:
             raise ConnectionRefusedError("Property not found")
 
+        join_room(prop_data[1]["user_id"])
         return {"is_online": prop_data[1]["is_online"], "last_seen": prop_data[1]["last_seen"]}
 
     @staticmethod
     def on_disconnect():
-        c.destroy_user_session(request.sid)
+        result = c.get_id_by_session(request.sid)
+        if result[0] == ControllerStatus.NOT_AVAILABLE:
+            return
+
+        emit("user_status_change", {"user_id": result[1], "is_online": False}, to=result[1], include_self=False)
+        c.destroy_user_session(result[1])
