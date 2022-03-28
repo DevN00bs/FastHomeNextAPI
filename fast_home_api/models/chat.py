@@ -1,5 +1,5 @@
 from marshmallow import Schema
-from marshmallow.fields import String, Integer, Function
+from marshmallow.fields import String, Integer, Function, Boolean
 from marshmallow_enum import EnumField as Enum
 from mongoengine import EmbeddedDocument
 from mongoengine.fields import StringField, EnumField, IntField
@@ -54,3 +54,9 @@ class StartConversationResponse(Schema):
 
 class IssuerDataResponse(Schema):
     username = String()
+
+
+class UserTypingRequest(Schema):
+    property_id = String(required=True)
+    token = String(required=True)
+    is_typing = Boolean(required=True)

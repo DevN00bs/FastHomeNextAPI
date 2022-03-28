@@ -114,6 +114,18 @@ class ChatNamespace(Namespace):
         return {"is_online": prop_data[1]["is_online"], "last_seen": prop_data[1]["last_seen"]}
 
     @staticmethod
+    def on_user_typing(data):
+        result = c.authenticate_and_validate(m.UserTypingRequest, data)
+        if result[0] == ControllerStatus.ERROR:
+            raise ConnectionRefusedError("Invalid request")
+        if result[0] == ControllerStatus.UNAUTHORIZED:
+            raise ConnectionRefusedError("Invalid credentials")
+
+        emit("user_typing", {"user_id": result[1]["decoded_token"]["id"], "is_typing": result[1]["is_typing"]},
+             to=result[1]["decoded_token"]["id"],
+             include_self=False)
+
+    @staticmethod
     def on_disconnect():
         result = c.get_id_by_session(request.sid)
         if result[0] == ControllerStatus.NOT_AVAILABLE:
