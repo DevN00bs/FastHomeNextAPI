@@ -11,6 +11,7 @@ class ControllerStatus(Enum):
     DOES_NOT_EXISTS = 6
     UNAUTHORIZED = 7
     NOT_AN_IMAGE = 8
+    NOT_AVAILABLE = 9
 
 
 class ChatEventType(Enum):
