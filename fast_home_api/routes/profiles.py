@@ -16,13 +16,13 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 @auth_required(auth)
 def get_profile():
     current = c.read_prof(auth.current_user["id"])
-    if current == ControllerStatus.ERROR:
+    if current[0] == ControllerStatus.ERROR:
         abort(500)
 
-    if current == ControllerStatus.DOES_NOT_EXISTS:
+    if current[0] == ControllerStatus.DOES_NOT_EXISTS:
         abort(404)
 
-    return current
+    return current[1]
 
 
 @router.put("/profile")
