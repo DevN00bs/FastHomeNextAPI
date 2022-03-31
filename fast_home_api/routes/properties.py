@@ -43,7 +43,10 @@ def read_property(options):
 @router.put("/property")
 @input(m.PropertyUpdate, examples=ex.put_property_request_examples)
 @output({}, 204)
-@doc(summary="Update a property's details")
+@doc(summary="Update a property's details", responses={
+    404: "The property you're trying to edit doesn't exist on the database",
+    403: "The property you're trying to edit doesn't belong to you"
+})
 @auth_required(auth)
 def update_property(data):
     result = c.update_prop(data, auth.current_user["id"])
@@ -62,7 +65,10 @@ def update_property(data):
 @router.delete("/property")
 @input(m.PropertyDelete, example=ex.delete_property_request_example)
 @output({}, 204)
-@doc(summary="Delete a property")
+@doc(summary="Delete a property", responses={
+    404: "The property you're trying to delete doesn't exist on the database",
+    403: "The property you're trying to delete doesn't belong to you"
+})
 @auth_required(auth)
 def delete_property(data):
     result = c.delete_prop(data, auth.current_user["id"])
@@ -80,7 +86,9 @@ def delete_property(data):
 @router.get("/property")
 @input(m.PropertyDataRequest, location="query", example=ex.get_property_request_example)
 @output(m.PropertyDataResponse, example=ex.get_property_response_example)
-@doc(summary="Get full details of a property")
+@doc(summary="Get full details of a property", responses={
+    404: "The property you're trying to look for doesn't exist in the database"
+})
 def get_property_data(data):
     result = c.get_property_data(data["id"])
     if result[0] == ControllerStatus.DOES_NOT_EXISTS:
@@ -97,7 +105,10 @@ def get_property_data(data):
 @input(m.UploadPhotosQueryRequest, location="form")
 @input(m.UploadPhotosFilesRequest, location="files")
 @output({}, 204)
-@doc(summary="Upload property's photos")
+@doc(summary="Upload property's photos", responses={
+    404: "The property you're trying to upload pictures doesn't exist on the database",
+    403: "The property you're trying to upload pictures doesn't belong to you"
+})
 @auth_required(auth)
 # First parameter is the "hack" request, it serves no purpose internally
 def upload_property_photos(_, data, files):

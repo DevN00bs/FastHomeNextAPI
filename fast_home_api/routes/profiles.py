@@ -11,7 +11,10 @@ router = APIBlueprint("prof", __name__, "Profiles", url_prefix="/api")
 @router.get("/profile")
 @output(m.ProfileData, 200)
 @doc(
-    summary="Get current user's profile - contact"
+    summary="Get current user's profile - contact",
+    responses={
+        404: "The profile you're trying to look for doesn't exist on the database"
+    }
 )
 @auth_required(auth)
 def get_profile():
@@ -28,7 +31,9 @@ def get_profile():
 @router.put("/profile")
 @input(m.ProfileData)
 @output({}, 204)
-@doc(summary="Update current user's profile info based on auth")
+@doc(summary="Update current user's profile info based on auth", responses={
+    404: "Your profile doesn't exist on the database, for some reason"
+})
 @auth_required(auth)
 def update_profile(data):
     result = c.update_prof(data, auth.current_user["id"])
